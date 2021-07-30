@@ -259,14 +259,6 @@
 	status = "okay";
 };
 
-&usbdrd_dwc3_0 {
-	status = "okay";
-	dr_mode = "otg";
-	phys = <&u2phy0_otg>;
-	phy-names = "usb2-phy";
-	maximum-speed = "high-speed";
-};
-
 &iep {
 	status = "okay";
 };

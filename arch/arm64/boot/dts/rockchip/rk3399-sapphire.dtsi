@@ -486,7 +486,7 @@
 		pinctrl-0 = <&fusb0_int>;
 		int-n-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
 		vbus-5v-gpios = <&gpio2 0 GPIO_ACTIVE_HIGH>;
-		status = "okay";
+		status = "disabled";
 	};
 };
 
@@ -545,7 +545,7 @@
 	usb2 {
 		vcc5v0_host_en: vcc5v0-host-en {
 			rockchip,pins =
-				<4 RK_PD1 RK_FUNC_GPIO &pcfg_pull_none>;
+				<2 2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
@@ -593,11 +593,11 @@
 
 &tcphy0 {
 	extcon = <&fusb0>;
-	status = "okay";
+	status = "disabled";
 };
 
 &tcphy1 {
-	status = "okay";
+	status = "disabled";
 };
 
 &tsadc {
@@ -610,7 +610,7 @@
 
 &u2phy0 {
 	status = "okay";
-	extcon = <&fusb0>;
+
 
 	u2phy0_otg: otg-port {
 		status = "okay";
@@ -669,6 +669,9 @@
 	status = "okay";
 	dr_mode = "otg";
 	extcon = <&u2phy0>;
+	phys = <&u2phy0_otg>;
+	phy-names = "usb2-phy";
+	maximum-speed = "high-speed";
 };
 
 &usbdrd3_1 {
