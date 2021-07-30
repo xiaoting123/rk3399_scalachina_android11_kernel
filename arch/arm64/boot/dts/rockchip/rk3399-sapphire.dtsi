@@ -164,7 +164,7 @@
 	vcc5v0_host: vcc5v0-host-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
-		gpio = <&gpio4 RK_PD1 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio2 2 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&vcc5v0_host_en>;
 		regulator-name = "vcc5v0_host";
@@ -668,16 +668,20 @@
 &usbdrd_dwc3_0 {
 	status = "okay";
 	dr_mode = "otg";
-	extcon = <&fusb0>;
+	extcon = <&u2phy0>;
 };
 
 &usbdrd3_1 {
+	extcon = <&u2phy1>;
 	status = "okay";
 };
 
 &usbdrd_dwc3_1 {
 	status = "okay";
 	dr_mode = "host";
+	phys = <&u2phy1_otg>;
+	phy-names = "usb2-phy";
+	maximum-speed = "high-speed";
 };
 
 &vopb {
