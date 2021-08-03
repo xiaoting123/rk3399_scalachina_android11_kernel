@@ -32,11 +32,13 @@ int rtc_hctosys(void)
 		.tv_nsec = NSEC_PER_SEC >> 1,
 	};
 	struct rtc_device *rtc = rtc_class_open(CONFIG_RTC_HCTOSYS_DEVICE);
-
 	if (rtc == NULL) {
+		strcpy(CONFIG_RTC_HCTOSYS_DEVICE,"rtc0");
+		rtc = rtc_class_open(CONFIG_RTC_HCTOSYS_DEVICE);
+		if(rtc == NULL){
 		pr_info("unable to open rtc device (%s)\n",
 			CONFIG_RTC_HCTOSYS_DEVICE);
-		goto err_open;
+		goto err_open;}
 	}
 
 	err = rtc_read_time(rtc, &tm);

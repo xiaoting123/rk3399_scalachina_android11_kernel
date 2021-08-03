@@ -32,8 +32,12 @@ int rtc_set_ntp_time(struct timespec64 now, unsigned long *target_nsec)
 	bool ok;
 
 	rtc = rtc_class_open(CONFIG_RTC_SYSTOHC_DEVICE);
-	if (!rtc)
-		goto out_err;
+	if(!rtc){
+		strcpy(CONFIG_RTC_SYSTOHC_DEVICE,"rtc0");
+		rtc = rtc_class_open(CONFIG_RTC_SYSTOHC_DEVICE);
+		if(!rtc)
+			goto out_err;
+	}
 
 	if (!rtc->ops || (!rtc->ops->set_time && !rtc->ops->set_mmss64 &&
 			  !rtc->ops->set_mmss))

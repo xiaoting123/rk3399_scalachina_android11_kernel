@@ -125,3 +125,12 @@ assigned-clock-parents = <&cru PLL_CPLL>;
 		reg = <0x50>;
 	};
 };
+
+&i2c6 {
+	status = "okay";
+	rx8130: rx8130@32 {
+		compatible ="epson,rx8130";
+		reg = <0x32>;
+		status = "okay";
+	};
+};

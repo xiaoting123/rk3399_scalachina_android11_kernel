@@ -83,4 +83,10 @@ assigned-clock-parents = <&cru PLL_CPLL>;
                 compatible = "atmel,24c02";
                 reg = <0x50>;
         };
+
+	rx8130: rx8130@32 {
+		compatible ="epson,rx8130";
+		reg = <0x32>;
+		status = "okay";
+	};
 };
