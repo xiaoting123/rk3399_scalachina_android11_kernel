@@ -104,7 +104,7 @@
 	vcc5v0_host: vcc5v0-host-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
-		gpio = <&gpio4 25 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio2 2 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&host_vbus_drv>;
 		regulator-name = "vcc5v0_host";
@@ -466,12 +466,12 @@
 
 &tcphy0 {
 	extcon = <&fusb0>;
-	status = "okay";
+	status = "disabled";
 };
 
 &tcphy1 {
 	extcon = <&fusb1>;
-	status = "okay";
+	status = "disabled";
 };
 
 &tsadc {
@@ -482,7 +482,6 @@
 
 &u2phy0 {
 	status = "okay";
-	extcon = <&fusb0>;
 
 	u2phy0_otg: otg-port {
 		status = "okay";
@@ -496,7 +495,6 @@
 
 &u2phy1 {
 	status = "okay";
-	extcon = <&fusb1>;
 
 	u2phy1_otg: otg-port {
 		status = "okay";
@@ -535,21 +533,30 @@
 };
 
 &usbdrd3_0 {
+	extcon = <&u2phy0>;
 	status = "okay";
 };
 
 &usbdrd_dwc3_0 {
 	status = "okay";
-	extcon = <&fusb0>;
+	dr_mode = "otg";
+	extcon = <&u2phy0>;
+	phys = <&u2phy0_otg>;
+	phy-names = "usb2-phy";
+	maximum-speed = "high-speed";
 };
 
 &usbdrd3_1 {
+	extcon = <&u2phy1>;
 	status = "okay";
 };
 
 &usbdrd_dwc3_1 {
 	status = "okay";
-	extcon = <&fusb1>;
+	dr_mode = "host";
+	phys = <&u2phy1_otg>;
+	phy-names = "usb2-phy";
+	maximum-speed = "high-speed";
 };
 
 &pwm0 {
@@ -613,7 +620,7 @@
 	usb2 {
 		host_vbus_drv: host-vbus-drv {
 			rockchip,pins =
-				<4 RK_PD1 RK_FUNC_GPIO &pcfg_pull_none>;
+				<2 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
