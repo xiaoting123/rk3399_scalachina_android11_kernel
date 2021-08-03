@@ -48,6 +48,7 @@ modules.builtin
 #
 # Top-level generic files
 #
+/configs
 /boot.img
 /kernel.img
 /resource.img
