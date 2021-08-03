@@ -83,6 +83,7 @@ struct i2c_msg {
 #define I2C_M_STOP		0x8000	/* if I2C_FUNC_PROTOCOL_MANGLING */
 	__u16 len;		/* msg length				*/
 	__u8 *buf;		/* pointer to msg data			*/
+	__u32 scl_rate;
 };
 
 /* To determine what functionality is present */

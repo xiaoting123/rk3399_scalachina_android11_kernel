@@ -4,8 +4,10 @@
 #
 
 # Each configuration option enables a list of files.
-
+EXTRA_CFLAGS +=-Wno-error=date-time
+EXTRA_CFLAGS +=-Wno-date-time
 wm97xx-ts-y := wm97xx-core.o
+obj-$(CONFIG_TOUCHSCREEN_GT9XX)= gt9xx.o goodix_tool.o gt9xx_update.o
 
 obj-$(CONFIG_TOUCHSCREEN_PROPERTIES)	+= of_touchscreen.o
 obj-$(CONFIG_TOUCHSCREEN_88PM860X)	+= 88pm860x-ts.o
@@ -55,7 +57,7 @@ obj-$(CONFIG_TOUCHSCREEN_GSL3673)	+= gsl3673-ts.o
 gsl3673-ts-y := gsl3673.o gsl_point_id.o
 obj-$(CONFIG_TOUCHSCREEN_GSL3673_800X1280)	+= gsl3673_800x1280.o gsl_point_id.o
 obj-$(CONFIG_TOUCHSCREEN_GSL3676)	+= gsl3676/
-obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
+#obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
 obj-$(CONFIG_TOUCHSCREEN_HIDEEP)	+= hideep.o
 obj-$(CONFIG_TOUCHSCREEN_ILI210X)	+= ili210x.o
 obj-$(CONFIG_TOUCHSCREEN_IMX6UL_TSC)	+= imx6ul_tsc.o
@@ -123,7 +125,7 @@ obj-$(CONFIG_TOUCHSCREEN_ZFORCE)	+= zforce_ts.o
 obj-$(CONFIG_TOUCHSCREEN_COLIBRI_VF50)	+= colibri-vf50-ts.o
 obj-$(CONFIG_TOUCHSCREEN_ROHM_BU21023)	+= rohm_bu21023.o
 obj-$(CONFIG_TOUCHSCREEN_VTL_CT36X)	+= vtl_ts/
-obj-$(CONFIG_TOUCHSCREEN_GT1X)		+= gt1x/
+#obj-$(CONFIG_TOUCHSCREEN_GT1X)		+= gt1x/
 obj-$(CONFIG_TOUCHSCREEN_HYN_CST2XX)	+= hyn_cst2xx/
 obj-$(CONFIG_TOUCHSCREEN_FTS)	+= focaltech_touch/
 obj-$(CONFIG_TOUCHSCREEN_FT5436)	+= focaltech_touch_ft5436/
