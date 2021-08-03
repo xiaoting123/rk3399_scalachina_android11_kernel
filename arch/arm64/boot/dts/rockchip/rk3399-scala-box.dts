@@ -49,6 +49,10 @@
 	model = "Rockchip RK3399 Evaluation Board v3 box (Android)";
 	compatible = "rockchip,android", "rockchip,rk3399-evb-rev3", "rockchip,rk3399";
 
+	remote_power_led {
+		compatible = "remote_led";
+		status = "okay";
+	};
 };
 
 &route_hdmi {

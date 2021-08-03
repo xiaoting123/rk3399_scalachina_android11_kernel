@@ -158,6 +158,10 @@ config INPUT_EVDEV
 	  To compile this driver as a module, choose M here: the
 	  module will be called evdev.
 
+config ENABLE_INPUT
+        tristate "ENABEL INPUT "
+config PRODUCT_BOX
+        tristate "PRODUCT_BOX"
 config INPUT_EVBUG
 	tristate "Event debugging"
 	help

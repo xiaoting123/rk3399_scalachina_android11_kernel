@@ -14,6 +14,9 @@
 #define EVDEV_MINORS		32
 #define EVDEV_MIN_BUFFER_SIZE	64U
 #define EVDEV_BUF_PACKETS	8
+#define AA ((vals->type ==2)||(vals->type==4))
+#define BB ((vals->type==1)&&((vals->code)!=330))
+#define CC ((vals->type==1)&&((vals->code)!=102)&&((vals->code)!=330))
 
 #include <linux/poll.h>
 #include <linux/sched.h>
@@ -27,6 +30,7 @@
 #include <linux/device.h>
 #include <linux/cdev.h>
 #include "input-compat.h"
+#include "enable.h"
 
 struct evdev {
 	int open;
@@ -291,13 +295,54 @@ static void evdev_pass_values(struct evdev_client *client,
 /*
  * Pass incoming events to all connected clients.
  */
+/*#define a ((vals->type ==2)||(vals->type==4))
+#define b (vals->type==1)
+#define c ((vals->type==1)&&((vals->code)!=102))
+if (flag_tp ==0)&&(vals->type==3)
+switch(flag_input)
+	case 0:if(a|b) flag=0;
+	case 1: flag=1;
+	case 2:if(c) flag=0;
+	case 3:if(a)flag=0;
+	case 4:if(a|c)flag=0;
+
+
+
+*/
+
+
+
+
+
+
+
+
 static void evdev_events(struct input_handle *handle,
 			 const struct input_value *vals, unsigned int count)
 {
 	struct evdev *evdev = handle->private;
 	struct evdev_client *client;
+	bool flag =true;
 	ktime_t *ev_time = input_get_timestamp(handle->dev);
+switch(flag_input)
+{
+	case 7:if(AA|BB) flag=false;break;
+	case 0: flag=true;break;
+	case 2:if(CC) flag=false;break;
+	case 4:if(AA)flag=false;break;
+	case 6:if(AA|CC)flag=false;break;
+	default: flag=true; break;
+}
+	if((flag_tp==1)&&((vals->type==3)||((vals->type==1)&&((vals->code)==330))))
+		flag=false;
 
+	if(handle->dev->id.product==24&&handle->dev->id.vendor==5050){
+	        flag=true;
+        }
+	       if(handle->dev->id.product==4608 &&handle->dev->id.vendor==1504){
+       flag=true;
+       }
+if(flag){
 	rcu_read_lock();
 
 	client = rcu_dereference(evdev->grab);
@@ -309,6 +354,7 @@ static void evdev_events(struct input_handle *handle,
 			evdev_pass_values(client, vals, count, ev_time);
 
 	rcu_read_unlock();
+	}
 }
 
 /*

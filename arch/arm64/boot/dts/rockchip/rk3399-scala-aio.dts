@@ -63,6 +63,11 @@
 			};
 		};
 	};
+
+	remote_power_led {
+		compatible = "remote_led";
+		status = "okay";
+	};
 };
 
 &edp {
