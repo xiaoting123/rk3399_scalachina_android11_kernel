@@ -73,3 +73,10 @@ assigned-clock-parents = <&cru PLL_VPLL>;
 assigned-clocks = <&cru DCLK_VOP1_DIV>;
 assigned-clock-parents = <&cru PLL_CPLL>;
 };
+
+&i2c4 {
+        at24: eeprom@50 {
+                compatible = "atmel,24c02";
+                reg = <0x50>;
+        };
+};
