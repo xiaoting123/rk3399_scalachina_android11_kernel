@@ -38,8 +38,9 @@
 #include <video/of_display_timing.h>
 #include <linux/of_graph.h>
 #include <video/videomode.h>
-
 #include "../rockchip/rockchip_drm_drv.h"
+int scanner_id;
+
 
 struct panel_cmd_header {
 	u8 data_type;
@@ -891,7 +892,110 @@ static const struct drm_display_mode ampire_am800480r3tmqwa1h_mode = {
 	.vrefresh = 60,
 	.flags = DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC,
 };
+static const struct drm_display_mode lg_lp079qx1_sp0v_mode = {
+	        .clock = 144800,
+        .hdisplay = 1920,
+        .hsync_start = 1920 + 48,
+        .hsync_end = 1920 + 48 + 48,
+        .htotal = 1920 + 48 + 48 + 64,
+        .vdisplay = 1080,
+        .vsync_start = 1080 + 32 ,
+        .vsync_end = 1080 + 32 + 16,
+        .vtotal = 1080 + 32 + 16 + 32,
+        .vrefresh = 60,
+        .flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
+};
+static const struct drm_display_mode lg_lp079qx1_sp2v_mode = {
+	        .clock = 141400,
+        .hdisplay = 1920,
+        .hsync_start = 1920 + 100,
+        .hsync_end = 1920 + 100 + 100,
+        .htotal = 1920 + 100 + 100 + 22,
+        .vdisplay = 1080,
+        .vsync_start = 1080 + 9,
+        .vsync_end = 1080 + 9 + 9,
+        .vtotal = 1080 + 9 + 9 + 2,
+        .vrefresh = 60,
+        .flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
+};
+static const struct drm_display_mode lg_lp079qx1_sp3v_mode = {
+	        .clock = 141400,
+        .hdisplay = 1920,
+        .hsync_start = 1920 + 100,
+        .hsync_end = 1920 + 100 + 100,
+        .htotal = 1920 + 100 + 100 + 22,
+        .vdisplay = 1080,
+        .vsync_start = 1080 + 9,
+        .vsync_end = 1080 + 9 + 9,
+        .vtotal = 1080 + 9 + 9 + 2,
+        .vrefresh = 60,
+        .flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
+};
+static const struct drm_display_mode lg_lp079qx1_sp5v_mode = {
+	        .clock = 141400,
+        .hdisplay = 1920,
+        .hsync_start = 1920 + 100,
+        .hsync_end = 1920 + 100 + 100,
+        .htotal = 1920 + 100 + 100 + 22,
+        .vdisplay = 1080,
+        .vsync_start = 1080 + 9,
+        .vsync_end = 1080 + 9 + 9,
+        .vtotal = 1080 + 9 + 9 + 2,
+        .vrefresh = 60,
+        .flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
+};
+static const struct drm_display_mode lg_lp079qx1_sp4v_mode = {
+        .clock = 75800,
+        .hdisplay = 1360,
+        .hsync_start = 1360 + 100,
+        .hsync_end = 1360 + 100 + 100,
+        .htotal = 1360 + 100 + 100 + 34,
+        .vdisplay = 768,
+        .vsync_start = 768 + 12,
+        .vsync_end = 768 + 12 + 12,
+        .vtotal = 768 + 12 + 12 + 2,
+        .vrefresh = 60,
+.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
+};
+static const struct drm_display_mode lg_lp079qx1_sp6v_mode = {
+	        .clock = 138500,
+        .hdisplay = 1920,
+        .hsync_start = 1920 + 120,
+        .hsync_end = 1920 + 120 + 120,
+        .htotal = 1920 + 120 + 120 + 40,
+        .vdisplay = 1080,
+        .vsync_start = 1080 + 14,
+        .vsync_end = 1080 + 14 + 16,
+        .vtotal = 1080 + 14 + 16 + 10,
+        .vrefresh = 60,
+        .flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
 
+};
+
+static const struct panel_desc lg_lp079qx1_sp0v = {
+.modes = &lg_lp079qx1_sp0v_mode,
+.num_modes = 1,
+};
+static const struct panel_desc lg_lp079qx1_sp2v = {
+.modes = &lg_lp079qx1_sp2v_mode,
+.num_modes = 1,
+};
+static const struct panel_desc lg_lp079qx1_sp3v = {
+.modes = &lg_lp079qx1_sp3v_mode,
+.num_modes = 1,
+};
+static const struct panel_desc lg_lp079qx1_sp4v = {
+.modes = &lg_lp079qx1_sp4v_mode,
+.num_modes = 1,
+};
+static const struct panel_desc lg_lp079qx1_sp5v = {
+.modes = &lg_lp079qx1_sp5v_mode,
+.num_modes = 1,
+};
+static const struct panel_desc lg_lp079qx1_sp6v = {
+.modes = &lg_lp079qx1_sp6v_mode,
+.num_modes = 1,
+};
 static const struct panel_desc ampire_am800480r3tmqwa1h = {
 	.modes = &ampire_am800480r3tmqwa1h_mode,
 	.num_modes = 1,
@@ -1976,29 +2080,6 @@ static const struct panel_desc lg_lb070wv8 = {
 		.height = 91,
 	},
 	.bus_format = MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,
-};
-
-static const struct drm_display_mode lg_lp079qx1_sp0v_mode = {
-	.clock = 200000,
-	.hdisplay = 1536,
-	.hsync_start = 1536 + 12,
-	.hsync_end = 1536 + 12 + 16,
-	.htotal = 1536 + 12 + 16 + 48,
-	.vdisplay = 2048,
-	.vsync_start = 2048 + 8,
-	.vsync_end = 2048 + 8 + 4,
-	.vtotal = 2048 + 8 + 4 + 8,
-	.vrefresh = 60,
-	.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
-};
-
-static const struct panel_desc lg_lp079qx1_sp0v = {
-	.modes = &lg_lp079qx1_sp0v_mode,
-	.num_modes = 1,
-	.size = {
-		.width = 129,
-		.height = 171,
-	},
 };
 
 static const struct drm_display_mode lg_lp097qx1_spa1_mode = {
@@ -3148,31 +3229,22 @@ static int panel_simple_of_get_desc_data(struct device *dev,
 
 static int panel_simple_platform_probe(struct platform_device *pdev)
 {
-	struct device *dev = &pdev->dev;
-	const struct of_device_id *id;
-	const struct panel_desc *desc;
-	struct panel_desc *d;
-	int err;
+	printk("victor panel_simple_platform_probe\n");
+			if(scanner_id == 5)
+				return panel_simple_probe(&pdev->dev, &lg_lp079qx1_sp0v);
+			else if(scanner_id ==10)
+				return panel_simple_probe(&pdev->dev, &lg_lp079qx1_sp2v);
+			else if(scanner_id ==30)
+				return panel_simple_probe(&pdev->dev, &lg_lp079qx1_sp3v);
+			else if(scanner_id ==35)
+				return panel_simple_probe(&pdev->dev, &lg_lp079qx1_sp4v);
+			else if(scanner_id ==36)
+				return panel_simple_probe(&pdev->dev, &lg_lp079qx1_sp5v);
+			else if(scanner_id ==31)
+				return panel_simple_probe(&pdev->dev, &lg_lp079qx1_sp6v);
+			else
+				return panel_simple_probe(&pdev->dev, &lg_lp079qx1_sp0v);
 
-	id = of_match_node(platform_of_match, pdev->dev.of_node);
-	if (!id)
-		return -ENODEV;
-
-	if (!id->data) {
-		d = devm_kzalloc(dev, sizeof(*d), GFP_KERNEL);
-		if (!d)
-			return -ENOMEM;
-
-		err = panel_simple_of_get_desc_data(dev, d);
-		if (err) {
-			dev_err(dev, "failed to get desc data: %d\n", err);
-			return err;
-		}
-	}
-
-	desc = id->data ? id->data : d;
-
-	return panel_simple_probe(&pdev->dev, desc);
 }
 
 static int panel_simple_platform_remove(struct platform_device *pdev)
