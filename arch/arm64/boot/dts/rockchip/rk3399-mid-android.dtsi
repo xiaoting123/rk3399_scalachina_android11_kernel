@@ -177,7 +177,7 @@
 	secure-memory-region = <&secure_memory>;
 	route {
 		route_hdmi: route-hdmi {
-			status = "disabled";
+			status = "okay";
 			logo,uboot = "logo.bmp";
 			logo,kernel = "logo_kernel.bmp";
 			logo,mode = "center";
@@ -204,7 +204,7 @@
 		};
 
 		route_edp: route-edp {
-			status = "disabled";
+			status = "okay";
 			logo,uboot = "logo.bmp";
 			logo,kernel = "logo_kernel.bmp";
 			logo,mode = "center";
