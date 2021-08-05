@@ -114,16 +114,18 @@ void rk_send_wakeup_key(void)
 }
 EXPORT_SYMBOL(rk_send_wakeup_key);
 
-static void keys_timer(unsigned long _data)
+static void keys_timer (struct timer_list * ptimer)
 {
-	struct rk_keys_button *button = (struct rk_keys_button *)_data;
+	//struct rk_keys_button *button = (struct rk_keys_button *)_data;
+
+	struct rk_keys_button *button = (struct rk_keys_button *)ptimer->flags;
 	struct rk_keys_drvdata *pdata = dev_get_drvdata(button->dev);
 	struct input_dev *input = pdata->input;
 	int state;
 
 	if (button->type == TYPE_GPIO)
 		state = !!((gpio_get_value(button->gpio) ? 1 : 0) ^
-			   button->active_low);
+			button->active_low);
 	else
 		state = !!button->adc_state;
 
@@ -131,8 +133,8 @@ static void keys_timer(unsigned long _data)
 		button->state = state;
 		input_event(input, EV_KEY, button->code, button->state);
 		key_dbg(pdata, "%skey[%s]: report event[%d] state[%d]\n",
-			button->type == TYPE_ADC ? "adc" : "gpio",
-			button->desc, button->code, button->state);
+		button->type == TYPE_ADC ? "adc" : "gpio",
+		button->desc, button->code, button->state);
 		input_event(input, EV_KEY, button->code, button->state);
 		input_sync(input);
 	}
@@ -376,8 +378,11 @@ static int keys_probe(struct platform_device *pdev)
 		struct rk_keys_button *button = &ddata->button[i];
 
 		if (button->code) {
-			setup_timer(&button->timer,
-				    keys_timer, (unsigned long)button);
+			__init_timer(&button->timer,keys_timer, 0 );
+			//timer_setup(&button->timer,keys_timer, (unsigned long)button);
+			button->timer.function = keys_timer;
+			button->timer.expires = HZ/2 + jiffies;
+			button->timer.flags = (u32)button;
 		}
 
 		if (button->wakeup)
