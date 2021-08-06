@@ -121,7 +121,7 @@ assigned-clock-parents = <&cru PLL_CPLL>;
 
 &i2c4 {
 	at24: eeprom@50 {
-		compatible = "atmel,24c02";
+		compatible = "atmel,24c16", "atmel,24c16a";
 		reg = <0x50>;
 	};
 };
