@@ -179,7 +179,7 @@
 		route_hdmi: route-hdmi {
 			status = "okay";
 			logo,uboot = "logo.bmp";
-			logo,kernel = "logo_kernel.bmp";
+			logo,kernel = "logo.bmp";
 			logo,mode = "center";
 			charge_logo,mode = "center";
 			connect = <&vopb_out_hdmi>;
@@ -188,7 +188,7 @@
 		route_dsi: route-dsi {
 			status = "disabled";
 			logo,uboot = "logo.bmp";
-			logo,kernel = "logo_kernel.bmp";
+			logo,kernel = "logo.bmp";
 			logo,mode = "center";
 			charge_logo,mode = "center";
 			connect = <&vopb_out_dsi>;
@@ -197,7 +197,7 @@
 		route_dsi1: route-dsi1 {
 			status = "disabled";
 			logo,uboot = "logo.bmp";
-			logo,kernel = "logo_kernel.bmp";
+			logo,kernel = "logo.bmp";
 			logo,mode = "center";
 			charge_logo,mode = "center";
 			connect = <&vopl_out_dsi1>;
@@ -206,7 +206,7 @@
 		route_edp: route-edp {
 			status = "okay";
 			logo,uboot = "logo.bmp";
-			logo,kernel = "logo_kernel.bmp";
+			logo,kernel = "logo.bmp";
 			logo,mode = "center";
 			charge_logo,mode = "center";
 			connect = <&vopb_out_edp>;
