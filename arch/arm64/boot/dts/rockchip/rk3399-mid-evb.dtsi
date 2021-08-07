@@ -187,7 +187,7 @@
 	};
 
 	hdmi_sound: hdmi-sound {
-		status = "disabled";
+		status = "okay";
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
 		simple-audio-card,mclk-fs = <256>;
@@ -196,7 +196,7 @@
 			sound-dai = <&i2s2>;
 		};
 		simple-audio-card,codec {
-			sound-dai = <&dw_hdmi_audio>;
+			sound-dai = <&hdmi>;
 		};
 	};
 
@@ -387,6 +387,7 @@
 };
 
 &i2s2 {
+	status = "okay";
 	#sound-dai-cells = <0>;
 };
 
