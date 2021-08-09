@@ -45,6 +45,8 @@
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/pm_runtime.h>
+#include <linux/soc/rockchip/rk_vendor_storage.h>
+unsigned int eeprom_lte_mac_addr[6] = {0,0,0,0,0,0};
 
 #define DRIVER_VERSION		"22-Aug-2005"
 
@@ -1670,9 +1672,10 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	struct driver_info		*info;
 	struct usb_device		*xdev;
 	int				status;
+	int ret ,i=0;
 	const char			*name;
 	struct usb_driver 	*driver = to_usb_driver(udev->dev.driver);
-
+	const char *s1 = "GobiNet";
 	/* usbnet already took usb runtime pm, so have to enable the feature
 	 * for usb interface, otherwise usb_autopm_get_interface may return
 	 * failure if RUNTIME_PM is enabled.
@@ -1729,7 +1732,30 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 
 	dev->net = net;
 	strcpy (net->name, "usb%d");
+	//scala add for 4G
+	printk("usbnet:name=%s \r\n",udev->dev.driver->name);
+	if (strcmp(udev->dev.driver->name, s1) == 0) {
+		strcpy (net->name, "lte%d");
+		printk("scala name %s!!!!\n",s1);
+		msleep(1000);
+	if (!is_zero_ether_addr((u8*)eeprom_lte_mac_addr))			
+	{
+			for(i=0;i<6;i++){
+			node_id[i] = eeprom_lte_mac_addr[i];}
+	}
+	if (is_zero_ether_addr(node_id)){		
+		ret = rk_vendor_read(BT_MAC_ID, node_id, 6);
+		if(ret != 6 || is_zero_ether_addr(node_id)){
+			random_ether_addr(node_id);
+			}
+		
+		}
+		}
+		else{
+			random_ether_addr(node_id);
+		}
 	memcpy (net->dev_addr, node_id, sizeof node_id);
+		msleep(1000);
 
 	/* rx and tx sides can use different message sizes;
 	 * bind() should set rx_urb_size in that case.
@@ -1754,7 +1780,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 		// can rename the link if it knows better.
 		if ((dev->driver_info->flags & FLAG_ETHER) != 0 &&
 		    ((dev->driver_info->flags & FLAG_POINTTOPOINT) == 0 ||
-		     (net->dev_addr [0] & 0x02) == 0))
+		     (net->dev_addr [0] & 0x02) == 0) && strcmp(udev->dev.driver->name,s1) !=0)
 			strcpy (net->name, "eth%d");
 		/* WLAN devices should always be named "wlan%d" */
 		if ((dev->driver_info->flags & FLAG_WLAN) != 0)
@@ -2195,13 +2221,32 @@ fail:
 EXPORT_SYMBOL_GPL(usbnet_write_cmd_async);
 /*-------------------------------------------------------------------------*/
 
+//scala add for 4G
+// EEPROM LTE MAC SETUP
+static int __init eeprom_ltemac_setup(char *str)
+{
+
+	if(str[0]==0x0)
+	{
+		printk("eeprom_ltemac_setup : invalid parameter");
+		return 0;
+	}
+
+	sscanf(str, "%02x%02x%02x%02x%02x%02x", &eeprom_lte_mac_addr[0], &eeprom_lte_mac_addr[1], &eeprom_lte_mac_addr[2], &eeprom_lte_mac_addr[3], &eeprom_lte_mac_addr[4], 
+	&eeprom_lte_mac_addr[5]);
+	printk("eeprom_lte_mac_addr:%02x:%02x:%02x:%02x:%02x:%02x\n",eeprom_lte_mac_addr[0],eeprom_lte_mac_addr[1],eeprom_lte_mac_addr[2],eeprom_lte_mac_addr[3],
+					eeprom_lte_mac_addr[4],eeprom_lte_mac_addr[5]);	
+                            
+	return 1;
+}
+__setup("androidboot.eeprom_lte_mac=", eeprom_ltemac_setup);
+
 static int __init usbnet_init(void)
 {
 	/* Compiler should optimize this out. */
 	BUILD_BUG_ON(
 		FIELD_SIZEOF(struct sk_buff, cb) < sizeof(struct skb_data));
 
-	eth_random_addr(node_id);
 	return 0;
 }
 module_init(usbnet_init);

@@ -1,0 +1,377 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ARCH	Makefile	/^ARCH := $(shell uname -m)$/;"	m
+ARCH	Makefile	/^ARCH=i386$/;"	m
+ARCH	makefile	/^ARCH := $(shell uname -m)$/;"	m
+ARCH	makefile	/^ARCH=i386$/;"	m
+AddToNotifyList	QMIDevice.c	/^bool AddToNotifyList( $/;"	f
+AddToReadMemList	QMIDevice.c	/^bool AddToReadMemList( $/;"	f
+AddToURBList	QMIDevice.c	/^bool AddToURBList( $/;"	f
+CDC_CONNECTION_SPEED	Structs.h	420;"	d
+CDC_CONNECTION_SPEED_CHANGE_BE	QMIDevice.c	186;"	d	file:
+CDC_CONNECTION_SPEED_CHANGE_LE	QMIDevice.c	185;"	d	file:
+CDC_CONNSPD_MASK_BE	QMIDevice.c	190;"	d	file:
+CDC_CONNSPD_MASK_LE	QMIDevice.c	191;"	d	file:
+CDC_GET_CONNECTION_SPEED_CHANGE	QMIDevice.c	192;"	d	file:
+CDC_GET_ENCAPSULATED_RESPONSE	QMIDevice.c	176;"	d	file:
+CDC_GET_ENCAPSULATED_RESPONSE_BE	QMIDevice.c	167;"	d	file:
+CDC_GET_ENCAPSULATED_RESPONSE_LE	QMIDevice.c	166;"	d	file:
+CDC_RSP_MASK_BE	QMIDevice.c	171;"	d	file:
+CDC_RSP_MASK_LE	QMIDevice.c	172;"	d	file:
+CONTROL_DTR	QMIDevice.c	202;"	d	file:
+CONTROL_RTS	QMIDevice.c	203;"	d	file:
+CROSS_COMPILE	Makefile	/^CROSS_COMPILE :=$/;"	m
+CROSS_COMPILE	makefile	/^CROSS_COMPILE :=$/;"	m
+CtlFlags	QMI.c	/^    u8  CtlFlags;      \/\/ 0: single QMUX Msg; 1:$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	file:
+DBG	QMI.h	80;"	d
+DEFAULT_READ_URB_LENGTH	Structs.h	279;"	d
+DRIVER_AUTHOR	GobiUSBNet.c	/^MODULE_AUTHOR( DRIVER_AUTHOR );$/;"	v
+DRIVER_AUTHOR	GobiUSBNet.c	72;"	d	file:
+DRIVER_DESC	GobiUSBNet.c	/^MODULE_DESCRIPTION( DRIVER_DESC );$/;"	v
+DRIVER_DESC	GobiUSBNet.c	73;"	d	file:
+DRIVER_SUSPENDED	Structs.h	421;"	d
+DRIVER_VERSION	GobiUSBNet.c	/^MODULE_VERSION( DRIVER_VERSION );$/;"	v
+DRIVER_VERSION	GobiUSBNet.c	71;"	d	file:
+DeregisterQMIDevice	QMIDevice.c	/^void DeregisterQMIDevice( sGobiUSBNet * pDev )$/;"	f
+DownlinkDataAggregationMaxDatagramsTlv	QMI.c	/^    struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV DownlinkDataAggregationMaxDatagramsTlv;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	typeref:struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG::QMIWDS_ADMIN_SET_DATA_FORMAT_TLV	file:
+DownlinkDataAggregationMaxSizeTlv	QMI.c	/^    struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV DownlinkDataAggregationMaxSizeTlv;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	typeref:struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG::QMIWDS_ADMIN_SET_DATA_FORMAT_TLV	file:
+DownlinkDataAggregationProtocolTlv	QMI.c	/^    struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV DownlinkDataAggregationProtocolTlv;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	typeref:struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG::QMIWDS_ADMIN_SET_DATA_FORMAT_TLV	file:
+EFAULT	QMI.h	118;"	d
+EINVAL	QMI.h	119;"	d
+ENODATA	QMI.h	123;"	d
+ENOMEM	QMI.h	117;"	d
+ENOMSG	QMI.h	121;"	d
+FillQMUX	QMI.c	/^int FillQMUX($/;"	f
+FindClientMem	QMIDevice.c	/^sClientMemList * FindClientMem( $/;"	f
+GOBI_FIXED_INTF	GobiUSBNet.c	1860;"	d	file:
+GetClientID	QMIDevice.c	/^int GetClientID( $/;"	f
+GetEndpoint	QMIDevice.c	/^static struct usb_endpoint_descriptor *GetEndpoint($/;"	f	file:
+GetQMIMessageID	QMI.c	/^int GetQMIMessageID($/;"	f
+GetTLV	QMI.c	/^int GetTLV($/;"	f
+GobiClearDownReason	QMIDevice.c	/^void GobiClearDownReason($/;"	f
+GobiNet	GobiUSBNet.c	/^static struct usb_driver GobiNet =$/;"	v	typeref:struct:usb_driver	file:
+GobiNet-objs	Makefile	/^GobiNet-objs := GobiUSBNet.o QMIDevice.o QMI.o$/;"	m
+GobiNet-objs	makefile	/^GobiNet-objs := GobiUSBNet.o QMIDevice.o QMI.o$/;"	m
+GobiNetDriverBind	GobiUSBNet.c	/^static int GobiNetDriverBind( $/;"	f	file:
+GobiNetDriverRxFixup	GobiUSBNet.c	/^static int GobiNetDriverRxFixup(struct usbnet *dev, struct sk_buff *skb)$/;"	f	file:
+GobiNetDriverRxPktsFixup	GobiUSBNet.c	/^static int GobiNetDriverRxPktsFixup(struct usbnet *dev, struct sk_buff *skb)$/;"	f	file:
+GobiNetDriverRxQmapFixup	GobiUSBNet.c	/^static int GobiNetDriverRxQmapFixup(struct usbnet *dev, struct sk_buff *skb)$/;"	f	file:
+GobiNetDriverTxFixup	GobiUSBNet.c	/^struct sk_buff *GobiNetDriverTxFixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)$/;"	f
+GobiNetDriverUnbind	GobiUSBNet.c	/^static void GobiNetDriverUnbind( $/;"	f	file:
+GobiNetInfo	GobiUSBNet.c	/^static const struct driver_info GobiNetInfo = $/;"	v	typeref:struct:driver_info	file:
+GobiNetResume	GobiUSBNet.c	/^int GobiNetResume( struct usb_interface * pIntf )$/;"	f
+GobiNetSuspend	GobiUSBNet.c	/^int GobiNetSuspend($/;"	f
+GobiSetDownReason	QMIDevice.c	/^void GobiSetDownReason($/;"	f
+GobiTestDownReason	QMIDevice.c	/^bool GobiTestDownReason($/;"	f
+GobiUSBNetAutoPMThread	GobiUSBNet.c	/^static int GobiUSBNetAutoPMThread( void * pData )$/;"	f	file:
+GobiUSBNetDisconnect	GobiUSBNet.c	/^static void GobiUSBNetDisconnect (struct usb_interface *intf) {$/;"	f	file:
+GobiUSBNetModExit	GobiUSBNet.c	/^module_exit( GobiUSBNetModExit );$/;"	v
+GobiUSBNetModExit	GobiUSBNet.c	/^static void __exit GobiUSBNetModExit( void )$/;"	f	file:
+GobiUSBNetModInit	GobiUSBNet.c	/^module_init( GobiUSBNetModInit );$/;"	v
+GobiUSBNetModInit	GobiUSBNet.c	/^static int __init GobiUSBNetModInit( void )$/;"	f	file:
+GobiUSBNetOpen	GobiUSBNet.c	/^int GobiUSBNetOpen( struct net_device * pNet )$/;"	f
+GobiUSBNetProbe	GobiUSBNet.c	/^int GobiUSBNetProbe( $/;"	f
+GobiUSBNetStartXmit	GobiUSBNet.c	/^int GobiUSBNetStartXmit( $/;"	f
+GobiUSBNetStartXmit2	GobiUSBNet.c	/^static int GobiUSBNetStartXmit2( struct sk_buff *pSKB, struct net_device *pNet ){$/;"	f	file:
+GobiUSBNetStop	GobiUSBNet.c	/^int GobiUSBNetStop( struct net_device * pNet )$/;"	f
+GobiUSBNetTXTimeout	GobiUSBNet.c	/^void GobiUSBNetTXTimeout( struct net_device * pNet )$/;"	f
+GobiUSBNetURBCallback	GobiUSBNet.c	/^void GobiUSBNetURBCallback( struct urb * pURB )$/;"	f
+GobiVIDPIDTable	GobiUSBNet.c	/^static const struct usb_device_id GobiVIDPIDTable [] =$/;"	v	typeref:struct:usb_device_id	file:
+INFO	QMI.h	96;"	d
+IOCTL_QMI_GET_DEVICE_MEID	QMIDevice.c	161;"	d	file:
+IOCTL_QMI_GET_DEVICE_VIDPID	QMIDevice.c	158;"	d	file:
+IOCTL_QMI_GET_SERVICE_FILE	QMIDevice.c	155;"	d	file:
+IOCTL_QMI_RELEASE_SERVICE_FILE_IOCTL	QMIDevice.c	163;"	d	file:
+IntCallback	QMIDevice.c	/^void IntCallback( struct urb * pIntURB )$/;"	f
+IsDeviceValid	QMIDevice.c	/^bool IsDeviceValid( sGobiUSBNet * pDev )$/;"	f
+KDIR	Makefile	/^KDIR := \/lib\/modules\/$(shell uname -r)\/build$/;"	m
+KDIR	makefile	/^KDIR := \/lib\/modules\/$(shell uname -r)\/build$/;"	m
+KillRead	QMIDevice.c	/^void KillRead( sGobiUSBNet * pDev )$/;"	f
+Length	QMI.c	/^    u16 Length;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	file:
+NET_IFACE_STOPPED	Structs.h	422;"	d
+NO_NDIS_CONNECTION	Structs.h	419;"	d
+NotifyAndPopNotifyList	QMIDevice.c	/^bool NotifyAndPopNotifyList( $/;"	f
+OUTPUTDIR	Makefile	/^OUTPUTDIR=\/lib\/modules\/`uname -r`\/kernel\/drivers\/net\/usb\/$/;"	m
+OUTPUTDIR	makefile	/^OUTPUTDIR=\/lib\/modules\/`uname -r`\/kernel\/drivers\/net\/usb\/$/;"	m
+PWD	Makefile	/^PWD := $(shell pwd)$/;"	m
+PWD	makefile	/^PWD := $(shell pwd)$/;"	m
+ParseQMUX	QMI.c	/^int ParseQMUX($/;"	f
+PopFromReadMemList	QMIDevice.c	/^bool PopFromReadMemList( $/;"	f
+PopFromURBList	QMIDevice.c	/^struct urb * PopFromURBList( $/;"	f
+PrintHex	QMIDevice.c	/^void PrintHex($/;"	f
+QMICTL	QMI.h	101;"	d
+QMICTLGetClientIDReq	QMI.c	/^int QMICTLGetClientIDReq($/;"	f
+QMICTLGetClientIDReqSize	QMI.c	/^u16 QMICTLGetClientIDReqSize( void )$/;"	f
+QMICTLGetClientIDResp	QMI.c	/^int QMICTLGetClientIDResp($/;"	f
+QMICTLReadyReq	QMI.c	/^int QMICTLReadyReq($/;"	f
+QMICTLReadyReqSize	QMI.c	/^u16 QMICTLReadyReqSize( void )$/;"	f
+QMICTLReleaseClientIDReq	QMI.c	/^int QMICTLReleaseClientIDReq($/;"	f
+QMICTLReleaseClientIDReqSize	QMI.c	/^u16 QMICTLReleaseClientIDReqSize( void )$/;"	f
+QMICTLReleaseClientIDResp	QMI.c	/^int QMICTLReleaseClientIDResp($/;"	f
+QMICTLSetDataFormatReq	QMI.c	/^int QMICTLSetDataFormatReq($/;"	f
+QMICTLSetDataFormatReqSize	QMI.c	/^u16  QMICTLSetDataFormatReqSize( void )$/;"	f
+QMICTLSyncProc	QMIDevice.c	/^int QMICTLSyncProc(sGobiUSBNet *pDev)$/;"	f
+QMICTLSyncReq	QMI.c	/^int QMICTLSyncReq($/;"	f
+QMICTLSyncReqSize	QMI.c	/^u16  QMICTLSyncReqSize( void )$/;"	f
+QMICTLSyncResp	QMI.c	/^int QMICTLSyncResp($/;"	f
+QMIDMS	QMI.h	103;"	d
+QMIDMSGetMEID	QMIDevice.c	/^int QMIDMSGetMEID( sGobiUSBNet * pDev )$/;"	f
+QMIDMSGetMEIDReq	QMI.c	/^int QMIDMSGetMEIDReq($/;"	f
+QMIDMSGetMEIDReqSize	QMI.c	/^u16 QMIDMSGetMEIDReqSize( void )$/;"	f
+QMIDMSGetMEIDResp	QMI.c	/^int QMIDMSGetMEIDResp($/;"	f
+QMINAS	QMI.h	104;"	d
+QMIReady	QMIDevice.c	/^bool QMIReady($/;"	f
+QMIUIM	QMI.h	105;"	d
+QMIWDA	QMI.h	106;"	d
+QMIWDASetDataFormat	QMIDevice.c	/^int QMIWDASetDataFormat( sGobiUSBNet * pDev, int qmap_mode, int *rx_urb_size )$/;"	f
+QMIWDASetDataFormatReq	QMI.c	/^int QMIWDASetDataFormatReq($/;"	f
+QMIWDASetDataFormatReqSize	QMI.c	/^u16 QMIWDASetDataFormatReqSize( int qmap_mode )$/;"	f
+QMIWDASetDataFormatResp	QMI.c	/^int QMIWDASetDataFormatResp($/;"	f
+QMIWDS	QMI.h	102;"	d
+QMIWDSCallback	QMIDevice.c	/^void QMIWDSCallback($/;"	f
+QMIWDSEventResp	QMI.c	/^int QMIWDSEventResp($/;"	f
+QMIWDSGetPKGSRVCStatusReq	QMI.c	/^int QMIWDSGetPKGSRVCStatusReq($/;"	f
+QMIWDSGetPKGSRVCStatusReqSize	QMI.c	/^u16 QMIWDSGetPKGSRVCStatusReqSize( void )$/;"	f
+QMIWDSSetEventReportReq	QMI.c	/^int QMIWDSSetEventReportReq($/;"	f
+QMIWDSSetEventReportReqSize	QMI.c	/^u16 QMIWDSSetEventReportReqSize( void )$/;"	f
+QMIWDSSetQMUXBindMuxDataPortReq	QMI.c	/^u16 QMIWDSSetQMUXBindMuxDataPortReq($/;"	f
+QMIWDSSetQMUXBindMuxDataPortSize	QMI.c	/^u16 QMIWDSSetQMUXBindMuxDataPortSize( void )$/;"	f
+QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	QMI.c	/^struct QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG$/;"	s	file:
+QMIWDS_ADMIN_SET_DATA_FORMAT_TLV	QMI.c	/^struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV$/;"	s	file:
+QMIWDS_ADMIN_SET_DATA_FORMAT_TLV_QOS	QMI.c	/^struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV_QOS$/;"	s	file:
+QMIWDS_ENDPOINT_TLV	QMI.c	/^struct QMIWDS_ENDPOINT_TLV$/;"	s	file:
+QMIXactionIDGet	QMIDevice.c	/^u8 QMIXactionIDGet( sGobiUSBNet *pDev)$/;"	f
+QMUXHeaderSize	QMI.c	/^u16 QMUXHeaderSize( void )$/;"	f
+QOSSetting	QMI.c	/^   u8  QOSSetting;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_TLV_QOS	file:
+QUECTEL_QMAP_MUX_ID	Structs.h	59;"	d
+QUECTEL_WWAN_QMAP	Structs.h	57;"	d
+QUEC_NET_MSG_ID_IP_DATA	GobiUSBNet.c	102;"	d	file:
+QUEC_NET_MSG_SPEC	GobiUSBNet.c	101;"	d	file:
+QosDataFormatTlv	QMI.c	/^    struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV_QOS QosDataFormatTlv;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	typeref:struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG::QMIWDS_ADMIN_SET_DATA_FORMAT_TLV_QOS	file:
+ReadAsync	QMIDevice.c	/^int ReadAsync($/;"	f
+ReadCallback	QMIDevice.c	/^void ReadCallback( struct urb * pReadURB )$/;"	f
+ReadSync	QMIDevice.c	/^int ReadSync($/;"	f
+ReadUrbTimerFunc	QMIDevice.c	/^static void ReadUrbTimerFunc( struct urb * pReadURB )$/;"	f	file:
+RegisterQMIDevice	QMIDevice.c	/^int RegisterQMIDevice( sGobiUSBNet * pDev )$/;"	f
+ReleaseClientID	QMIDevice.c	/^void ReleaseClientID($/;"	f
+ResubmitIntURB	QMIDevice.c	/^int ResubmitIntURB( struct urb * pIntURB )$/;"	f
+SET_CONTROL_LINE_STATE_REQUEST	QMIDevice.c	201;"	d	file:
+SET_CONTROL_LINE_STATE_REQUEST_TYPE	QMIDevice.c	200;"	d	file:
+SetupQMIWDSCallback	QMIDevice.c	/^int SetupQMIWDSCallback( sGobiUSBNet * pDev )$/;"	f
+StartRead	QMIDevice.c	/^int StartRead( sGobiUSBNet * pDev )$/;"	f
+TLVLength	QMI.c	/^   u16 TLVLength;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_TLV	file:
+TLVLength	QMI.c	/^   u16 TLVLength;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_TLV_QOS	file:
+TLVLength	QMI.c	/^   u16 TLVLength;$/;"	m	struct:QMIWDS_ENDPOINT_TLV	file:
+TLVType	QMI.c	/^   u8  TLVType;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_TLV	file:
+TLVType	QMI.c	/^   u8  TLVType;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_TLV_QOS	file:
+TLVType	QMI.c	/^   u8  TLVType;$/;"	m	struct:QMIWDS_ENDPOINT_TLV	file:
+TLV_TYPE_LINK_PROTO	QMI.h	125;"	d
+TransactionId	QMI.c	/^    u16 TransactionId;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	file:
+Type	QMI.c	/^    u16 Type;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	file:
+URB_FREE_BUFFER	Structs.h	73;"	d
+URB_FREE_BUFFER_BY_SELF	Structs.h	72;"	d
+USB_CDC_SET_MULTI_PACKAGE_COMMAND	GobiUSBNet.c	100;"	d	file:
+UnderlyingLinkLayerProtocolTlv	QMI.c	/^    struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV UnderlyingLinkLayerProtocolTlv;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	typeref:struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG::QMIWDS_ADMIN_SET_DATA_FORMAT_TLV	file:
+UpSem	QMIDevice.c	/^void UpSem( $/;"	f
+UplinkDataAggregationProtocolTlv	QMI.c	/^    struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV UplinkDataAggregationProtocolTlv;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	typeref:struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG::QMIWDS_ADMIN_SET_DATA_FORMAT_TLV	file:
+UserspaceClose	QMIDevice.c	/^int UserspaceClose( $/;"	f
+UserspaceClose	QMIDevice.c	/^int UserspaceClose($/;"	f
+UserspaceIOCTL	QMIDevice.c	/^int UserspaceIOCTL($/;"	f
+UserspaceOpen	QMIDevice.c	/^int UserspaceOpen($/;"	f
+UserspacePoll	QMIDevice.c	/^unsigned int UserspacePoll($/;"	f
+UserspaceQMIFops	QMIDevice.c	/^struct file_operations UserspaceQMIFops = $/;"	v	typeref:struct:file_operations
+UserspaceRead	QMIDevice.c	/^ssize_t UserspaceRead( $/;"	f
+UserspaceWrite	QMIDevice.c	/^ssize_t UserspaceWrite($/;"	f
+UserspaceunlockedIOCTL	QMIDevice.c	/^long UserspaceunlockedIOCTL($/;"	f
+VDBG	QMI.h	93;"	d
+ValidQMIMessage	QMI.c	/^int ValidQMIMessage($/;"	f
+Value	QMI.c	/^   u32  Value;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_TLV	file:
+WriteSync	QMIDevice.c	/^int WriteSync($/;"	f
+WriteSyncCallback	QMIDevice.c	/^void WriteSyncCallback( struct urb * pWriteURB )$/;"	f
+__cached_gcc_-print-file-name_include	.cache.mk	/^__cached_gcc_-print-file-name_include := \/usr\/lib\/gcc\/x86_64-linux-gnu\/5\/include$/;"	m
+__packed	GobiUSBNet.c	/^} __packed;$/;"	v	typeref:struct:multi_package_config
+__packed	GobiUSBNet.c	/^} __packed;$/;"	v	typeref:struct:qmap_hdr
+__packed	GobiUSBNet.c	/^} __packed;$/;"	v	typeref:struct:quec_net_package_header
+__packed	QMI.c	/^} __packed;$/;"	v	typeref:struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG
+__packed	QMI.c	/^} __packed;$/;"	v	typeref:struct:QMIWDS_ADMIN_SET_DATA_FORMAT_TLV
+__packed	QMI.c	/^} __packed;$/;"	v	typeref:struct:QMIWDS_ADMIN_SET_DATA_FORMAT_TLV_QOS
+__packed	QMI.c	/^} __packed;$/;"	v	typeref:struct:QMIWDS_ENDPOINT_TLV
+__this_module	GobiNet.mod.c	/^__visible struct module __this_module$/;"	v	typeref:struct:module
+__used	GobiNet.mod.c	/^__used$/;"	v	file:
+bool	GobiUSBNet.c	2159;"	d	file:
+bool	QMI.h	113;"	d
+bool	Structs.h	70;"	d
+bridge_arp_reply	GobiUSBNet.c	/^static int bridge_arp_reply(sGobiUSBNet * pGobiDev, struct sk_buff *skb) {$/;"	f	file:
+bridge_ipv4_show	GobiUSBNet.c	/^static ssize_t bridge_ipv4_show(struct device *dev, struct device_attribute *attr, char *buf) {$/;"	f	file:
+bridge_ipv4_store	GobiUSBNet.c	/^static ssize_t bridge_ipv4_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count) {$/;"	f	file:
+bridge_mode	GobiUSBNet.c	/^static int __read_mostly bridge_mode = 0;$/;"	v	file:
+bridge_mode_show	GobiUSBNet.c	/^static ssize_t bridge_mode_show(struct device *dev, struct device_attribute *attr, char *buf) {$/;"	f	file:
+bridge_mode_store	GobiUSBNet.c	/^static ssize_t bridge_mode_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count) {$/;"	f	file:
+cd_rsvd_pad	GobiUSBNet.c	/^    u8 cd_rsvd_pad;$/;"	m	struct:qmap_hdr	file:
+debug	GobiUSBNet.c	/^int debug = 0;$/;"	v
+devfs_name	QMIDevice.c	/^static char devfs_name[32];$/;"	v	file:
+device_create	QMIDevice.c	/^int device_create(struct class *class,  struct device *parent, dev_t devt, const char *fmt, ...)$/;"	f
+device_destroy	QMIDevice.c	/^void device_destroy(struct class *class, dev_t devt)$/;"	f
+ec20_mac	GobiUSBNet.c	/^static const unsigned char ec20_mac[ETH_ALEN] = {0x02, 0x50, 0xf3, 0x00, 0x00, 0x00};$/;"	v	file:
+enable	GobiUSBNet.c	/^	__le32 enable;$/;"	m	struct:multi_package_config	file:
+epTlv	QMI.c	/^    struct QMIWDS_ENDPOINT_TLV epTlv;$/;"	m	struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG	typeref:struct:QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG::QMIWDS_ENDPOINT_TLV	file:
+ep_type	QMI.c	/^   u32  ep_type;$/;"	m	struct:QMIWDS_ENDPOINT_TLV	file:
+f_dentry	QMIDevice.c	2323;"	d	file:
+false	QMI.h	115;"	d
+gcc-goto.sh_gcc_-Wall_-Wundef_-Wstrict-prototypes_-Wno-trigraphs_-fno-strict-aliasing_-fno-common_-fshort-wchar_-Werror-implicit-function-declaration_-Wno-format-security_-std_gnu89_-fno-PIE_-mno-sse_-mno-mmx_-mno-sse2_-mno-3dnow_-mno-avx_-m64_-falign-jumps_1_-falign-loops_1_-mno-80387_-mno-fp-ret-in-387_-mpreferred-stack-boundary_3_-mskip-rax-setup_-mtune_generic_-mno-red-zone_-mcmodel_kernel_-funit-at-a-time_-DCONFIG_X86_X32_ABI_-DCONFIG_AS_CFI_1_-DCONFIG_AS_CFI_SIGNAL_FRAME_1_-DCONFIG_AS_CFI_SECTIONS_1_-DCONFIG_AS_FXSAVEQ_1_-DCONFIG_AS_SSSE3_1_-DCONFIG_AS_CRC32_1_-DCONFIG_AS_AVX_1_-DCONFIG_AS_AVX2_1_-DCONFIG_AS_AVX512_1_-DCONFIG_AS_SHA1_NI_1_-DCONFIG_AS_SHA256_NI_1_-pipe_-Wno-sign-compare_-fno-asynchronous-unwind-tables_-mindirect-branch_thunk-extern_-mindirect-branch-register_-DRETPOLINE_-fno-delete-null-pointer-checks_____-O2__--param_allow-store-data-races_0	.cache.mk	/^__cached_\/bin\/bash_.\/scripts\/gcc-goto.sh_gcc_-Wall_-Wundef_-Wstrict-prototypes_-Wno-trigraphs_-fno-strict-aliasing_-fno-common_-fshort-wchar_-Werror-implicit-function-declaration_-Wno-format-security_-std_gnu89_-fno-PIE_-mno-sse_-mno-mmx_-mno-sse2_-mno-3dnow_-mno-avx_-m64_-falign-jumps_1_-falign-loops_1_-mno-80387_-mno-fp-ret-in-387_-mpreferred-stack-boundary_3_-mskip-rax-setup_-mtune_generic_-mno-red-zone_-mcmodel_kernel_-funit-at-a-time_-DCONFIG_X86_X32_ABI_-DCONFIG_AS_CFI_1_-DCONFIG_AS_CFI_SIGNAL_FRAME_1_-DCONFIG_AS_CFI_SECTIONS_1_-DCONFIG_AS_FXSAVEQ_1_-DCONFIG_AS_SSSE3_1_-DCONFIG_AS_CRC32_1_-DCONFIG_AS_AVX_1_-DCONFIG_AS_AVX2_1_-DCONFIG_AS_AVX512_1_-DCONFIG_AS_SHA1_NI_1_-DCONFIG_AS_SHA256_NI_1_-pipe_-Wno-sign-compare_-fno-asynchronous-unwind-tables_-mindirect-branch_thunk-extern_-mindirect-branch-register_-DRETPOLINE_-fno-delete-null-pointer-checks_____-O2__--param_allow-store-data-races_0 := y$/;"	m
+gcc-version.sh_-p_gcc	.cache.mk	/^__cached_\/bin\/bash_.\/scripts\/gcc-version.sh_-p_gcc := 050400$/;"	m
+gcc-version.sh_gcc	.cache.mk	/^__cached_\/bin\/bash_.\/scripts\/gcc-version.sh_gcc := 0504$/;"	m
+gobinet_sysfs_attr_group	GobiUSBNet.c	/^static struct attribute_group gobinet_sysfs_attr_group = {$/;"	v	typeref:struct:attribute_group	file:
+gobinet_sysfs_attrs	GobiUSBNet.c	/^static struct attribute *gobinet_sysfs_attrs[] = {$/;"	v	typeref:struct:attribute	file:
+gpClass	GobiUSBNet.c	/^static struct class * gpClass;$/;"	v	typeref:struct:class	file:
+i	QMIDevice.c	/^const int i = 1;$/;"	v
+iface_id	QMI.c	/^   u32  iface_id;$/;"	m	struct:QMIWDS_ENDPOINT_TLV	file:
+interruptible	GobiUSBNet.c	/^int interruptible = 1;$/;"	v
+is_bigendian	QMIDevice.c	175;"	d	file:
+local_usbnet_start_xmit	GobiUSBNet.c	/^static int (*local_usbnet_start_xmit) (struct sk_buff *skb, struct net_device *net);$/;"	v	file:
+mActiveURBLock	Structs.h	/^   spinlock_t                 mActiveURBLock;$/;"	m	struct:sAutoPM
+mAutoPM	Structs.h	/^   sAutoPM                mAutoPM;$/;"	m	struct:sGobiUSBNet
+mCdev	Structs.h	/^   struct cdev                mCdev;$/;"	m	struct:sQMIDev	typeref:struct:sQMIDev::cdev
+mClientID	Structs.h	/^   u16                          mClientID;$/;"	m	struct:sClientMemList
+mClientID	Structs.h	/^   u16                  mClientID;$/;"	m	struct:sQMIFilpStorage
+mClientMemLock	Structs.h	/^   spinlock_t                 mClientMemLock;$/;"	m	struct:sQMIDev
+mCtrlFlag	QMI.h	/^   u8         mCtrlFlag;$/;"	m	struct:sQMUX
+mDataSize	Structs.h	/^   u16                        mDataSize;$/;"	m	struct:sReadMemList
+mDevNum	Structs.h	/^   dev_t                      mDevNum;$/;"	m	struct:sQMIDev
+mDownReason	Structs.h	/^   unsigned long          mDownReason;$/;"	m	struct:sGobiUSBNet
+mHostMAC	Structs.h	/^   unsigned char     mHostMAC[6];$/;"	m	struct:sGobiUSBNet
+mIndex	Structs.h	/^   u16   mIndex;$/;"	m	struct:sURBSetupPacket
+mLength	QMI.h	/^   u16        mLength;$/;"	m	struct:sQMUX
+mLength	Structs.h	/^   u16   mLength;$/;"	m	struct:sURBSetupPacket
+mMEID	Structs.h	/^   char                   mMEID[14];$/;"	m	struct:sGobiUSBNet
+mQMICTLTransactionID	Structs.h	/^   atomic_t                   mQMICTLTransactionID;$/;"	m	struct:sQMIDev
+mQMIClientID	QMI.h	/^   u8         mQMIClientID;$/;"	m	struct:sQMUX
+mQMIDev	Structs.h	/^   sQMIDev                mQMIDev;$/;"	m	struct:sGobiUSBNet
+mQMIReadyCompletion	Structs.h	/^   struct completion mQMIReadyCompletion;$/;"	m	struct:sGobiUSBNet	typeref:struct:sGobiUSBNet::completion
+mQMIService	QMI.h	/^   u8         mQMIService;$/;"	m	struct:sQMUX
+mReadUrbTimer	Structs.h	/^   struct timer_list mReadUrbTimer;$/;"	m	struct:sQMIDev	typeref:struct:sQMIDev::timer_list
+mRequestCode	Structs.h	/^   u8    mRequestCode;$/;"	m	struct:sURBSetupPacket
+mRequestType	Structs.h	/^   u8    mRequestType;$/;"	m	struct:sURBSetupPacket
+mTF	QMI.h	/^   u8         mTF;$/;"	m	struct:sQMUX
+mThreadDoWork	Structs.h	/^   struct completion          mThreadDoWork;$/;"	m	struct:sAutoPM	typeref:struct:sAutoPM::completion
+mTransactionID	Structs.h	/^   u16                        mTransactionID;$/;"	m	struct:sReadMemList
+mTransactionID	Structs.h	/^   u16                   mTransactionID;$/;"	m	struct:sNotifyList
+mURBListLen	Structs.h	/^   atomic_t                   mURBListLen;$/;"	m	struct:sAutoPM
+mURBListLock	Structs.h	/^   spinlock_t                 mURBListLock;$/;"	m	struct:sAutoPM
+mValue	Structs.h	/^   u16   mValue;$/;"	m	struct:sURBSetupPacket
+mWaitQueue	Structs.h	/^   wait_queue_head_t    mWaitQueue;$/;"	m	struct:sClientMemList
+m_bridge_ipv4	Structs.h	/^   uint m_bridge_ipv4;$/;"	m	struct:sGobiUSBNet
+m_bridge_mode	Structs.h	/^   int m_bridge_mode;$/;"	m	struct:sGobiUSBNet
+m_qcrmcall_mode	Structs.h	/^   int m_qcrmcall_mode;$/;"	m	struct:sGobiUSBNet
+m_qmap_bridge_mode	Structs.h	/^   int m_qmap_bridge_mode[8];$/;"	m	struct:sGobiUSBNet
+m_qmap_mode	Structs.h	/^   int m_qmap_mode;$/;"	m	struct:sGobiUSBNet
+mbCdevIsInitialized	Structs.h	/^   bool                       mbCdevIsInitialized;$/;"	m	struct:sQMIDev
+mbDeregisterQMIDevice	Structs.h	/^   bool                   mbDeregisterQMIDevice;$/;"	m	struct:sGobiUSBNet
+mbExit	Structs.h	/^   bool                       mbExit;$/;"	m	struct:sAutoPM
+mbMdm9x06	Structs.h	/^    bool                   mbMdm9x06;	\/\/for BG96$/;"	m	struct:sGobiUSBNet
+mbMdm9x07	Structs.h	/^    bool                   mbMdm9x07;  $/;"	m	struct:sGobiUSBNet
+mbQMIReady	Structs.h	/^   bool                   mbQMIReady;$/;"	m	struct:sGobiUSBNet
+mbQMIValid	Structs.h	/^   bool                   mbQMIValid;$/;"	m	struct:sGobiUSBNet
+mbRawIPMode	Structs.h	/^   bool                   mbRawIPMode;$/;"	m	struct:sGobiUSBNet
+mpActiveURB	Structs.h	/^   struct urb *               mpActiveURB;$/;"	m	struct:sAutoPM	typeref:struct:sAutoPM::urb
+mpClientMemList	Structs.h	/^   sClientMemList *           mpClientMemList;$/;"	m	struct:sQMIDev
+mpData	Structs.h	/^   void *                     mpData;$/;"	m	struct:sReadMemList
+mpData	Structs.h	/^   void *                mpData;$/;"	m	struct:sNotifyList
+mpDev	Structs.h	/^   sGobiUSBNet *        mpDev;$/;"	m	struct:sQMIFilpStorage
+mpIntBuffer	Structs.h	/^   void *                     mpIntBuffer;$/;"	m	struct:sQMIDev
+mpIntURB	Structs.h	/^   struct urb *               mpIntURB;$/;"	m	struct:sQMIDev	typeref:struct:sQMIDev::urb
+mpIntf	Structs.h	/^   struct usb_interface *     mpIntf;$/;"	m	struct:sAutoPM	typeref:struct:sAutoPM::usb_interface
+mpIntf	Structs.h	/^   struct usb_interface * mpIntf;$/;"	m	struct:sGobiUSBNet	typeref:struct:sGobiUSBNet::usb_interface
+mpList	Structs.h	/^   sReadMemList *               mpList;$/;"	m	struct:sClientMemList
+mpNetDev	Structs.h	/^   struct usbnet *        mpNetDev;$/;"	m	struct:sGobiUSBNet	typeref:struct:sGobiUSBNet::usbnet
+mpNext	Structs.h	/^   struct sClientMemList *      mpNext;$/;"	m	struct:sClientMemList	typeref:struct:sClientMemList::sClientMemList
+mpNext	Structs.h	/^   struct sNotifyList *  mpNext;$/;"	m	struct:sNotifyList	typeref:struct:sNotifyList::sNotifyList
+mpNext	Structs.h	/^   struct sReadMemList *      mpNext;$/;"	m	struct:sReadMemList	typeref:struct:sReadMemList::sReadMemList
+mpNext	Structs.h	/^   struct sURBList *  mpNext;$/;"	m	struct:sURBList	typeref:struct:sURBList::sURBList
+mpNotifyFunct	Structs.h	/^   void                  (* mpNotifyFunct)(struct sGobiUSBNet *, u16, void *);$/;"	m	struct:sNotifyList
+mpQmapNetDev	Structs.h	/^   struct net_device	*mpQmapNetDev[8];$/;"	m	struct:sGobiUSBNet	typeref:struct:sGobiUSBNet::net_device
+mpReadBuffer	Structs.h	/^   void *                     mpReadBuffer;$/;"	m	struct:sQMIDev
+mpReadNotifyList	Structs.h	/^   sNotifyList *                mpReadNotifyList;$/;"	m	struct:sClientMemList
+mpReadSetupPacket	Structs.h	/^   sURBSetupPacket *          mpReadSetupPacket;$/;"	m	struct:sQMIDev
+mpReadURB	Structs.h	/^   struct urb *               mpReadURB;$/;"	m	struct:sQMIDev	typeref:struct:sQMIDev::urb
+mpThread	Structs.h	/^   struct task_struct *       mpThread;$/;"	m	struct:sAutoPM	typeref:struct:sAutoPM::task_struct
+mpURB	Structs.h	/^   struct urb *       mpURB;$/;"	m	struct:sURBList	typeref:struct:sURBList::urb
+mpURBList	Structs.h	/^   sURBList *                   mpURBList;$/;"	m	struct:sClientMemList
+mpURBList	Structs.h	/^   sURBList *                 mpURBList;$/;"	m	struct:sAutoPM
+mpUSBNetOpen	Structs.h	/^   int                  (* mpUSBNetOpen)(struct net_device *);$/;"	m	struct:sGobiUSBNet
+mpUSBNetStop	Structs.h	/^   int                  (* mpUSBNetStop)(struct net_device *);$/;"	m	struct:sGobiUSBNet
+msg_id	GobiUSBNet.c	/^	unsigned char msg_id;$/;"	m	struct:quec_net_package_header	file:
+msg_spec	GobiUSBNet.c	/^	unsigned char msg_spec;$/;"	m	struct:quec_net_package_header	file:
+multi_package_config	GobiUSBNet.c	/^struct multi_package_config {$/;"	s	file:
+mux_id	GobiUSBNet.c	/^    u8 mux_id;$/;"	m	struct:qmap_hdr	file:
+obj-m	Makefile	/^obj-m := GobiNet.o$/;"	m
+obj-m	makefile	/^obj-m := GobiNet.o$/;"	m
+offset_id	GobiUSBNet.c	/^	u8 offset_id;$/;"	m	struct:qmap_priv	file:
+package_max_count_in_queue	GobiUSBNet.c	/^	__le32 package_max_count_in_queue;$/;"	m	struct:multi_package_config	file:
+package_max_len	GobiUSBNet.c	/^	__le32 package_max_len;$/;"	m	struct:multi_package_config	file:
+payload_len	GobiUSBNet.c	/^	unsigned short payload_len;$/;"	m	struct:quec_net_package_header	file:
+pkt_len	GobiUSBNet.c	/^    u16 pkt_len;$/;"	m	struct:qmap_hdr	file:
+qcrmcall_mode	GobiUSBNet.c	/^static uint __read_mostly qcrmcall_mode = 0;$/;"	v	file:
+qmap_hdr	GobiUSBNet.c	/^struct qmap_hdr {$/;"	s	file:
+qmap_mode	GobiUSBNet.c	/^static uint __read_mostly qmap_mode = 0;$/;"	v	file:
+qmap_mode_show	GobiUSBNet.c	/^static ssize_t qmap_mode_show(struct device *dev, struct device_attribute *attr, char *buf) {$/;"	f	file:
+qmap_mode_store	GobiUSBNet.c	/^static ssize_t qmap_mode_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count) {$/;"	f	file:
+qmap_netdev_ops	GobiUSBNet.c	/^static const struct net_device_ops qmap_netdev_ops = {$/;"	v	typeref:struct:net_device_ops	file:
+qmap_open	GobiUSBNet.c	/^static int qmap_open(struct net_device *dev)$/;"	f	file:
+qmap_priv	GobiUSBNet.c	/^struct qmap_priv {$/;"	s	file:
+qmap_register_device	GobiUSBNet.c	/^static int qmap_register_device(sGobiUSBNet * pDev, u8 offset_id)$/;"	f	file:
+qmap_start_xmit	GobiUSBNet.c	/^static int qmap_start_xmit(struct sk_buff *skb, struct net_device *pNet)$/;"	f	file:
+qmap_stop	GobiUSBNet.c	/^static int qmap_stop(struct net_device *pNet)$/;"	f	file:
+qmap_unregister_device	GobiUSBNet.c	/^static void qmap_unregister_device(sGobiUSBNet * pDev, u8 offset_id) {$/;"	f	file:
+qmi_sync_thread	QMIDevice.c	/^static int qmi_sync_thread(void *data) {$/;"	f	file:
+quec_net_package_header	GobiUSBNet.c	/^struct quec_net_package_header {$/;"	s	file:
+quectel_no_for_each_process	QMIDevice.h	287;"	d
+real_dev	GobiUSBNet.c	/^	struct net_device *real_dev;$/;"	m	struct:qmap_priv	typeref:struct:qmap_priv::net_device	file:
+refcount	Structs.h	/^    atomic_t refcount;$/;"	m	struct:sGobiUSBNet
+reserve	GobiUSBNet.c	/^	unsigned char reserve[16];$/;"	m	struct:quec_net_package_header	file:
+rx_packets	GobiUSBNet.c	/^static uint __read_mostly rx_packets = 10;$/;"	v	file:
+sAutoPM	Structs.h	/^typedef struct sAutoPM$/;"	s
+sAutoPM	Structs.h	/^} sAutoPM;$/;"	t	typeref:struct:sAutoPM
+sClientMemList	Structs.h	/^typedef struct sClientMemList$/;"	s
+sClientMemList	Structs.h	/^} sClientMemList;$/;"	t	typeref:struct:sClientMemList
+sGobiUSBNet	Structs.h	/^typedef struct sGobiUSBNet$/;"	s
+sGobiUSBNet	Structs.h	/^} sGobiUSBNet;$/;"	t	typeref:struct:sGobiUSBNet
+sNotifyList	Structs.h	/^typedef struct sNotifyList$/;"	s
+sNotifyList	Structs.h	/^} sNotifyList;$/;"	t	typeref:struct:sNotifyList
+sQMIDev	Structs.h	/^typedef struct sQMIDev$/;"	s
+sQMIDev	Structs.h	/^} sQMIDev;$/;"	t	typeref:struct:sQMIDev
+sQMIFilpStorage	Structs.h	/^typedef struct sQMIFilpStorage$/;"	s
+sQMIFilpStorage	Structs.h	/^} sQMIFilpStorage;$/;"	t	typeref:struct:sQMIFilpStorage
+sQMUX	QMI.h	/^typedef struct sQMUX$/;"	s
+sQMUX	QMI.h	/^}__attribute__((__packed__)) sQMUX;$/;"	t	typeref:struct:sQMUX
+sReadMemList	Structs.h	/^typedef struct sReadMemList$/;"	s
+sReadMemList	Structs.h	/^} sReadMemList;$/;"	t	typeref:struct:sReadMemList
+sURBList	Structs.h	/^typedef struct sURBList$/;"	s
+sURBList	Structs.h	/^} sURBList;$/;"	t	typeref:struct:sURBList
+sURBSetupPacket	Structs.h	/^typedef struct sURBSetupPacket$/;"	s
+sURBSetupPacket	Structs.h	/^} sURBSetupPacket;$/;"	t	typeref:struct:sURBSetupPacket
+s_interval	QMIDevice.c	/^static int s_interval;$/;"	v	file:
+skb_reset_mac_header	Structs.h	/^static inline void skb_reset_mac_header(struct sk_buff *skb)$/;"	f
+timeout	GobiUSBNet.c	/^	__le32 timeout;$/;"	m	struct:multi_package_config	file:
+true	QMI.h	114;"	d
+txQueueLength	GobiUSBNet.c	/^int txQueueLength = 100;$/;"	v
+u16	QMI.h	109;"	d
+u32	QMI.h	110;"	d
+u64	QMI.h	111;"	d
+u8	QMI.h	108;"	d
+usb_autopm_disable	Structs.h	/^static inline void usb_autopm_disable(struct usb_interface *intf)$/;"	f
+usb_autopm_enable	Structs.h	/^static inline void usb_autopm_enable(struct usb_interface *intf)$/;"	f
+usb_autopm_get_interface	Structs.h	/^static inline int usb_autopm_get_interface(struct usb_interface *intf)$/;"	f
+usb_autopm_get_interface_async	Structs.h	/^static inline int usb_autopm_get_interface_async(struct usb_interface *intf)$/;"	f
+usb_autopm_put_interface	Structs.h	/^static inline void usb_autopm_put_interface(struct usb_interface *intf)$/;"	f
+usb_autopm_put_interface_async	Structs.h	/^static inline void usb_autopm_put_interface_async(struct usb_interface *intf)$/;"	f
+usb_autopm_set_interface	Structs.h	/^static inline int usb_autopm_set_interface(struct usb_interface *intf)$/;"	f
+usb_endpoint_dir_in	Structs.h	/^static inline int usb_endpoint_dir_in(const struct usb_endpoint_descriptor *epd)$/;"	f
+usb_endpoint_dir_out	Structs.h	/^static inline int usb_endpoint_dir_out($/;"	f
+usb_endpoint_type	Structs.h	/^static inline int usb_endpoint_type(const struct usb_endpoint_descriptor *epd)$/;"	f
+usb_endpoint_xfer_int	Structs.h	/^static inline int usb_endpoint_xfer_int($/;"	f
+usb_mark_last_busy	Structs.h	/^static inline void usb_mark_last_busy(struct usb_device *udev)$/;"	f

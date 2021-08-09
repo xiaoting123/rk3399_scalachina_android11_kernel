@@ -66,6 +66,7 @@
 
 	remote_power_led {
 		compatible = "remote_led";
+		power4g-gpios = <&gpio1 1 GPIO_ACTIVE_LOW>;
 		status = "okay";
 	};
 };

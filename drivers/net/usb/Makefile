@@ -40,3 +40,6 @@ obj-$(CONFIG_USB_VL600)		+= lg-vl600.o
 obj-$(CONFIG_USB_NET_QMI_WWAN)	+= qmi_wwan.o
 obj-$(CONFIG_USB_NET_CDC_MBIM)	+= cdc_mbim.o
 obj-$(CONFIG_USB_NET_CH9200)	+= ch9200.o
+#scala add for 4G
+#obj-y += GobiNet.o
+obj-y += GobiUSBNet.o QMIDevice.o QMI.o
