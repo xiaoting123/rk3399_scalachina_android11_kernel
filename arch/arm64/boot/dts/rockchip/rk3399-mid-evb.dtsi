@@ -55,40 +55,46 @@
 		keyup-threshold-microvolt = <1800000>;
 		poll-interval = <100>;
 
-		vol-up-key {
-			label = "volume up";
-			linux,code = <KEY_VOLUMEUP>;
+		home-key {
+			label = "home";
+			linux,code = <KEY_HOME>;
 			press-threshold-microvolt = <1750>;
+		};
+
+		brightness-up-key {
+			label = "brightness up";
+			linux,code = <KEY_BRIGHTNESSUP>;
+			press-threshold-microvolt = <297500>;
 		};
 
 		vol-down-key {
 			label = "volume down";
 			linux,code = <KEY_VOLUMEDOWN>;
-			press-threshold-microvolt = <297500>;
-		};
-
-		menu-key {
-			label = "menu";
-			linux,code = <KEY_MENU>;
 			press-threshold-microvolt = <1305500>;
 		};
 
-		home-key {
-			label = "home";
-			linux,code = <KEY_HOME>;
+		brightness-down-key {
+			label = "brightness down";
+			linux,code = <KEY_BRIGHTNESSDOWN>;
 			press-threshold-microvolt = <621250>;
 		};
 
-		back-key {
-			label = "back";
-			linux,code = <KEY_BACK>;
+		vol-up-key {
+			label = "volume up";
+			linux,code = <KEY_VOLUMEUP>;
 			press-threshold-microvolt = <980000>;
 		};
 
-		camera-key {
-			label = "camera";
-			linux,code = <KEY_CAMERA>;
+		reserve-key {
+			label = "reserve";
+			linux,code = <KEY_RESERVE>;
 			press-threshold-microvolt = <787500>;
+		};
+
+		reset-key {
+			label = "reset";
+			linux,code = <KEY_RESET>;
+			press-threshold-microvolt = <459380>;
 		};
 	};
 

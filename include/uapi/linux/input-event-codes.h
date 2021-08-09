@@ -273,6 +273,10 @@
 #define KEY_F22			192
 #define KEY_F23			193
 #define KEY_F24			194
+#define KEY_RESERVE             195     /* yuliu */
+#define KEY_RESET               196
+#define KEY_LIGHT               198
+#define KEY_SCALAPOWER          199
 
 #define KEY_PLAYCD		200
 #define KEY_PAUSECD		201
