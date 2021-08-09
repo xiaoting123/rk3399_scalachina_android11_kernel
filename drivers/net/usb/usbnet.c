@@ -46,7 +46,9 @@
 #include <linux/kernel.h>
 #include <linux/pm_runtime.h>
 #include <linux/soc/rockchip/rk_vendor_storage.h>
+
 unsigned int eeprom_lte_mac_addr[6] = {0,0,0,0,0,0};
+
 
 #define DRIVER_VERSION		"22-Aug-2005"
 
@@ -83,6 +85,9 @@ unsigned int eeprom_lte_mac_addr[6] = {0,0,0,0,0,0};
 
 // randomly generated ethernet address
 static u8	node_id [ETH_ALEN];
+
+
+static const char driver_name [] = "usbnet";
 
 /* use ethtool to change the level for any given device */
 static int msg_level = -1;
@@ -1732,6 +1737,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 
 	dev->net = net;
 	strcpy (net->name, "usb%d");
+
 	//scala add for 4G
 	printk("usbnet:name=%s \r\n",udev->dev.driver->name);
 	if (strcmp(udev->dev.driver->name, s1) == 0) {
@@ -1754,8 +1760,9 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 		else{
 			random_ether_addr(node_id);
 		}
+
 	memcpy (net->dev_addr, node_id, sizeof node_id);
-		msleep(1000);
+	msleep(1000);
 
 	/* rx and tx sides can use different message sizes;
 	 * bind() should set rx_urb_size in that case.
@@ -2220,7 +2227,6 @@ fail:
 }
 EXPORT_SYMBOL_GPL(usbnet_write_cmd_async);
 /*-------------------------------------------------------------------------*/
-
 //scala add for 4G
 // EEPROM LTE MAC SETUP
 static int __init eeprom_ltemac_setup(char *str)

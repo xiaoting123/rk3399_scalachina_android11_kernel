@@ -40,6 +40,8 @@
  * This function pointer and context can now be set up in at24_platform_data.
  */
 
+#define DISP_START_REG_ADDR	0x50	/* scala china display timing start reg addr*/
+#define DELAY_START_REG_ADDR	0x84	/* scala china display delay start reg addr*/
 struct at24_platform_data {
 	u32		byte_len;		/* size (sum of all addr) */
 	u16		page_size;		/* for writes */
@@ -57,4 +59,47 @@ struct at24_platform_data {
 	void		*context;
 };
 
+struct disp_timing
+{
+	unsigned int clock_freq;
+	unsigned short hactive;
+	unsigned short vactive;
+	unsigned short hfront_porch;
+	unsigned short hsync_len;
+	unsigned short hback_porch;
+	unsigned short vfront_porch;
+	unsigned short vsync_len;
+	unsigned short vback_porch;
+	unsigned short hsync_active;
+	unsigned short vsync_active;
+	unsigned short de_active;
+	unsigned short pixelclk_active;
+};
+
+struct timing_id
+{
+	unsigned int checksum;
+	unsigned int length;
+	struct disp_timing scala_timing;
+};
+
+struct panel_delay
+{
+	unsigned short prepare_delay_ms;
+	unsigned short enable_delay_ms;
+	unsigned char reserved[8];
+};
+
+enum eeprom_page {
+       EEPROM_BANK0 = 0,
+       EEPROM_BANK1,
+       EEPROM_BANK2,
+       EEPROM_BANK3,
+       EEPROM_BANK4,
+       EEPROM_BANK5,
+       EEPROM_BANK6,
+       EEPROM_BANK7,
+};
+void get_scala_timing(struct disp_timing *timing_a);
+void get_scala_lcddelay(struct panel_delay *lcddelay);
 #endif /* _LINUX_AT24_H */

@@ -48,47 +48,52 @@
 / {
 	compatible = "rockchip,rk3399-evb", "rockchip,rk3399";
 
-	adc_keys: adc-keys {
-		compatible = "adc-keys";
-		io-channels = <&saradc 1>;
-		io-channel-names = "buttons";
-		keyup-threshold-microvolt = <1800000>;
-		poll-interval = <100>;
+	rk_key: rockchip-key {
+		compatible = "rockchip,key";
+		status = "okay";
 
-		vol-up-key {
+		io-channels = <&saradc 1>;
+
+		home-key {
+			linux,code = <102>;
 			label = "volume up";
-			linux,code = <KEY_VOLUMEUP>;
-			press-threshold-microvolt = <1750>;
+			rockchip,adc_value = <1>;
+		};
+
+		bright-up-key {
+			linux,code = <225>;
+			label = "volume down";
+			rockchip,adc_value = <170>;
+		};
+
+		reset-key {
+			linux,code = <196>;
+			label = "reset";
+			rockchip,adc_value = <255>;
+		};
+
+		bright-down-key {
+			linux,code = <224>;
+			label = "menu";
+			rockchip,adc_value = <355>;
 		};
 
 		vol-down-key {
-			label = "volume down";
-			linux,code = <KEY_VOLUMEDOWN>;
-			press-threshold-microvolt = <297500>;
-		};
-
-		menu-key {
-			label = "menu";
-			linux,code = <KEY_MENU>;
-			press-threshold-microvolt = <1305500>;
-		};
-
-		home-key {
+			linux,code = <114>;
 			label = "home";
-			linux,code = <KEY_HOME>;
-			press-threshold-microvolt = <621250>;
+			rockchip,adc_value = <746>;
 		};
 
-		back-key {
+		vol-up-key {
+			linux,code = <115>;
 			label = "back";
-			linux,code = <KEY_BACK>;
-			press-threshold-microvolt = <980000>;
+			rockchip,adc_value = <560>;
 		};
 
-		camera-key {
+		yuliu-key {
+			linux,code = <195>;
 			label = "camera";
-			linux,code = <KEY_CAMERA>;
-			press-threshold-microvolt = <787500>;
+			rockchip,adc_value = <450>;
 		};
 	};
 
@@ -115,33 +120,73 @@
 		status ="okay";
 		compatible = "pwm-backlight";
 		pwms = <&pwm0 0 2500000 0>;
-		brightness-levels = <80 80 80 80 80 80 80 80 80 80 80 80 80 80 80 80 80
-                        80 80 80 80 81 82 83 84 85 86 87 88 89 90 91 92
-                        93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108
-                        109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124
-                        125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140
-                        141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156
-                        157 158 159 160 161 162 163 164 165 166 167 168 169 170 171 172
-                        173 174 175 176 177 178 179 180 181 182 183 184 185 186 187 188
-                        189 190 191 192 193 194 195 196 197 198 199 200 201 202 203 204
-                        205 206 207 208 209 210 211 212 213 214 215 216 217 218 219 220
-                        221 222 223 224 225 226 227 228 229 230 231 232 233 234 235 236
-                        237 238 239 240 241 242 243 244 245 246 247 248 249 250 251 252
-                        253 254 255 255 255 255 255 255 255 255 255 255 255 255 255
-                        //               255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-                        //               255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-                        //               255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
-                        >;
-		brightness-levels2 = <255 255 255 255 255 255 255 255 255 255 255 255 255 254 253 252 251 250 249 248 247 246 245 244 243 242 241 240
-		    239 238 237 236 235 234 233 232 231 230 229 228 227 226 225 224 223 222 221 220
-		    219 218 217 216 215 214 213 212 211 210 209 208 207 206 205 204 203 202 201 200
-		    199 198 197 196 195 194 193 192 191 190 189 188 187 186 185 184 183 182 181 180
-		    179 178 177 176 175 174 173 172 171 170 169 168 167 166 165 164 163 162 161 160
-		    159 158 157 156 155 154 153 152 151 150 149 148 147 146 145 144 143 142 141 140
-		    139 138 137 136 135 134 133 132 131 130 129 128 127 126 125 124 123 122 121 120
-		    119 118 117 116 115 114 113 112 111 110 109 108 107 106 105 104 103 102 101 100
-		    99 98 97 96 95 94 93 92 91 90 89 88 87 86 85 84 83 82 81 80 80 80 80 80 80 80 80 80 80 80 80 80 80 80 80 80 80 80 80 80>;
 
+		brightness-levels = <
+			80  80  80  80  80  80  80  80
+			80  80  80  80  80  80  80  80
+			80  80  80  80  80  80  80  80
+			80  80  80  80  80  80  80  80
+			80  80  80  80  80  80  80  80
+			80  81  82  83  84  85  86  87
+			88  89  90  91  92  93  94  95
+			96  97  98  99  100 101 102 103
+			104 105 106 107 108 109 110 111
+			112 113 114 115 116 117 118 119
+			120 121 122 123 124 125 126 127
+			128 129 130 131 132 133 134 135
+			136 137 138 139 140 141 142 143
+			144 145 146 147 148 149 150 151
+			152 153 154 155 156 157 158 159
+			160 161 162 163 164 165 166 167
+			168 169 170 171 172 173 174 175
+			176 177 178 179 180 181 182 183
+			184 185 186 187 188 189 190 191
+			192 193 194 195 196 197 198 199
+			200 201 202 203 204 205 206 207
+			208 209 210 211 212 213 214 215
+			216 217 218 219 220 221 222 223
+			224 225 226 227 228 229 230 231
+			232 233 234 235 236 237 238 239
+			240 241 242 243 244 245 246 247
+			248 249 250 251 252 253 253 253
+			253 253 253 253 253 253 253 253
+			253 253 253 253 253 253 253 253
+			253 253 253 253 253 253 253 253
+			253 253 253 253 253 253 253 253
+			253 253 253 253 253 253 253 253>;
+		brightness-levels2 = <
+			253 253 253 253 253 253 253 253
+			253 253 253 253 253 253 253 253
+			253 253 253 253 253 253 253 253
+			253 253 253 253 253 253 253 253
+			253 253 253 253 253 253 253 253
+			253 253 253 252 251 250 249 248
+			247 246 245 244 243 242 241 240
+			239 238 237 236 235 234 233 232
+			231 230 229 228 227 226 225 224
+			223 222 221 220 219 218 217 216
+			215 214 213 212 211 210 209 208
+			207 206 205 204 203 202 201 200
+			199 198 197 196 195 194 193 192
+			191 190 189 188 187 186 185 184
+			183 182 181 180 179 178 177 176
+			175 174 173 172 171 170 169 168
+			167 166 165 164 163 162 161 160
+			159 158 157 156 155 154 153 152
+			151 150 149 148 147 146 145 144
+			143 142 141 140 139 138 137 136
+			135 134 133 132 131 130 129 128
+			127 126 125 124 123 122 121 120
+			119 118 117 116 115 114 113 112
+			111 110 109 108 107 106 105 104
+			232 233 234 235 236 237 238 239
+			240 241 242 243 244 245 246 247
+			103 102 101 100 99  98  97  96
+			95  94  93  92  91  90  89  88
+			87  86  85  84  83  82  81  80
+			80  80  80  80  80  80  80  80
+			80  80  80  80  80  80  80  80
+			80  80  80  80  80  80  80  80>;
 		default-brightness-level = <200>;
 		enable-gpios = <&gpio1 23 GPIO_ACTIVE_HIGH>;
 	};
@@ -182,7 +227,7 @@
 	};
 
 	hdmi_sound: hdmi-sound {
-		status = "disabled";
+		status = "okay";
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
 		simple-audio-card,mclk-fs = <256>;
@@ -191,7 +236,7 @@
 			sound-dai = <&i2s2>;
 		};
 		simple-audio-card,codec {
-			sound-dai = <&dw_hdmi_audio>;
+			sound-dai = <&hdmi>;
 		};
 	};
 
@@ -251,7 +296,7 @@
 		//wifi-bt-power-toggle;
 		uart_rts_gpios = <&gpio2 19 GPIO_ACTIVE_LOW>; /* GPIO2_C3 */
 		pinctrl-names = "default", "rts_gpio";
-		pinctrl-0 = <&uart0_rts>;
+		pinctrl-0 = <&uart0_rts>, <&bt_reset_gpio>, <&bt_wake_gpio>, <&bt_irq_gpio>;
 		pinctrl-1 = <&uart0_gpios>;
 		//BT,power_gpio  = <&gpio3 19 GPIO_ACTIVE_HIGH>; /* GPIOx_xx */
 		BT,reset_gpio    = <&gpio0 9 GPIO_ACTIVE_HIGH>; /* GPIO0_B1 */
@@ -382,6 +427,7 @@
 };
 
 &i2s2 {
+	status = "okay";
 	#sound-dai-cells = <0>;
 };
 
@@ -410,6 +456,7 @@
 		pinctrl-0 = <&i2s_8ch_mclk>;
 		spk-con-gpio = <&gpio0 11 GPIO_ACTIVE_HIGH>;
 		hp-det-gpio = <&gpio4 28 GPIO_ACTIVE_LOW>;
+		status = "disabled";
 	};
 };
 
@@ -594,7 +641,20 @@
 
 	wireless-bluetooth {
 		uart0_gpios: uart0-gpios {
-			rockchip,pins = <2 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins =
+				<2 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		bt_reset_gpio: bt-reset-gpio {
+			rockchip,pins =
+				<0 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		bt_wake_gpio: bt-wake-gpio {
+			rockchip,pins =
+				<2 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		bt_irq_gpio: bt-irq-gpio {
+			rockchip,pins =
+				<0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 	};
 

@@ -26,6 +26,47 @@
 #include <sound/soc.h>
 #include <sound/soc-dpcm.h>
 #include <sound/initval.h>
+int noovospeaker_id = 2;
+int eepromspeaker_id = 2;
+
+static int ascii_to_integer(char *string )
+{
+	int value = 0;
+	while (*string >= '0' && *string <='9')
+		{
+			value *= 10;
+			value += *string - '0';
+			string++;
+		}
+	if(*string != '\0')
+		{
+			return -1;
+		}
+	return value;
+}
+
+
+static int __init eepromspeaker_setup(char *str)
+{
+	if(str[0]==0x0)
+		return 0;
+	eepromspeaker_id = ascii_to_integer(str);
+	printk("%s %d\n",__func__,eepromspeaker_id);
+	return 1;
+}
+__setup("androidboot.eeprom_speak=", eepromspeaker_setup);
+
+static int __init noovospeaker_setup(char *str)
+{
+	if(!str)
+		return 0;
+	noovospeaker_id = ascii_to_integer(str);
+	printk("%s %d\n",__func__,noovospeaker_id);
+	return 1;
+}
+__setup("androidboot.noovo.speaker=", noovospeaker_setup);
+
+
 
 /**
  * snd_soc_info_enum_double - enumerated double mixer info callback
@@ -339,6 +380,24 @@ int snd_soc_put_volsw(struct snd_kcontrol *kcontrol,
 			type_2r = true;
 		}
 	}
+	//add by victor
+	if(eepromspeaker_id != 0) {
+		noovospeaker_id = eepromspeaker_id;
+	}
+	printk("snd_soc_put_volsw speak_id:%d",noovospeaker_id);
+	if(noovospeaker_id ==2){
+		noovospeaker_id =142;
+	}else if(noovospeaker_id ==9){
+		noovospeaker_id =158;
+	}
+	if(strcmp(component->name,"rt5640.1-001c")==0){
+		if(reg ==0x1a){
+			val2 = noovospeaker_id & mask;
+			val =val2;
+			val = (val2 << shift) | val2;
+		}
+	}
+
 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
 	if (err < 0)
 		return err;

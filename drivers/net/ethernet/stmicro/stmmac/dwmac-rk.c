@@ -35,7 +35,9 @@
 #include <linux/soc/rockchip/rk_vendor_storage.h>
 #include "stmmac_platform.h"
 #include "dwmac-rk-tool.h"
+#include  <linux/memory.h>
 
+unsigned int eeprom_eth0_mac_addr[6]={0,0,0,0,0,0};
 #define MAX_ETH		2
 
 struct rk_priv_data;
@@ -222,6 +224,19 @@ static int xpcs_setup(struct rk_priv_data *bsp_priv, int mode)
 					 GRF_BIT(6))
 #define PX30_GMAC_SPEED_10M		GRF_CLR_BIT(2)
 #define PX30_GMAC_SPEED_100M		GRF_BIT(2)
+
+static int __init eeprom_eth0mac_setup(char *str)
+{
+	if(str[0] == 0x0)
+		return 0;
+
+	sscanf(str, "%02x%02x%02x%02x%02x%02x", &eeprom_eth0_mac_addr[0], &eeprom_eth0_mac_addr[1], &eeprom_eth0_mac_addr[2], &eeprom_eth0_mac_addr[3], &eeprom_eth0_mac_addr[4], &eeprom_eth0_mac_addr[5]);
+	printk("eeprom_eth0_mac_addr:%02x:%02x:%02x:%02x:%02x:%02x\n",eeprom_eth0_mac_addr[0],eeprom_eth0_mac_addr[1],eeprom_eth0_mac_addr[2],eeprom_eth0_mac_addr[3],
+		eeprom_eth0_mac_addr[4],eeprom_eth0_mac_addr[5]);
+	return 1;
+}
+
+__setup("androidboot.eeprom_eth0_mac=", eeprom_eth0mac_setup);
 
 static void px30_set_to_rmii(struct rk_priv_data *bsp_priv)
 {
@@ -2052,6 +2067,7 @@ void __weak rk_devinfo_get_eth_mac(u8 *mac)
 
 void rk_get_eth_addr(void *priv, unsigned char *addr)
 {
+	int i;
 	struct rk_priv_data *bsp_priv = priv;
 	struct device *dev = &bsp_priv->pdev->dev;
 	unsigned char ethaddr[ETH_ALEN * MAX_ETH] = {0};
@@ -2066,28 +2082,36 @@ void rk_get_eth_addr(void *priv, unsigned char *addr)
 		return;
 	}
 
-	ret = rk_vendor_read(LAN_MAC_ID, ethaddr, ETH_ALEN * MAX_ETH);
-	if (ret <= 0 ||
-	    !is_valid_ether_addr(&ethaddr[id * ETH_ALEN])) {
-		dev_err(dev, "%s: rk_vendor_read eth mac address failed (%d)\n",
-			__func__, ret);
-		random_ether_addr(&ethaddr[id * ETH_ALEN]);
-		memcpy(addr, &ethaddr[id * ETH_ALEN], ETH_ALEN);
-		dev_err(dev, "%s: generate random eth mac address: %pM\n", __func__, addr);
-
-		ret = rk_vendor_write(LAN_MAC_ID, ethaddr, ETH_ALEN * MAX_ETH);
-		if (ret != 0)
-			dev_err(dev, "%s: rk_vendor_write eth mac address failed (%d)\n",
-				__func__, ret);
-
-		ret = rk_vendor_read(LAN_MAC_ID, ethaddr, ETH_ALEN * MAX_ETH);
-		if (ret != ETH_ALEN * MAX_ETH)
-			dev_err(dev, "%s: id: %d rk_vendor_read eth mac address failed (%d)\n",
-				__func__, id, ret);
-	} else {
-		memcpy(addr, &ethaddr[id * ETH_ALEN], ETH_ALEN);
+	for(i=0;i<6;i++){
+		addr[i] = eeprom_eth0_mac_addr[i];
 	}
 
+	if (is_zero_ether_addr(addr))
+	{
+		printk("rk_eeprom_read eth0 mac address failed ,start read from vendor\n");
+		ret = rk_vendor_read(LAN_MAC_ID, ethaddr, ETH_ALEN * MAX_ETH);
+		if (ret <= 0 ||
+		    !is_valid_ether_addr(&ethaddr[id * ETH_ALEN])) {
+			dev_err(dev, "%s: rk_vendor_read eth mac address failed (%d)\n",
+				__func__, ret);
+			random_ether_addr(&ethaddr[id * ETH_ALEN]);
+			memcpy(addr, &ethaddr[id * ETH_ALEN], ETH_ALEN);
+			dev_err(dev, "%s: generate random eth mac address: %pM\n", __func__, addr);
+
+			ret = rk_vendor_write(LAN_MAC_ID, ethaddr, ETH_ALEN * MAX_ETH);
+			if (ret != 0)
+				dev_err(dev, "%s: rk_vendor_write eth mac address failed (%d)\n",
+					__func__, ret);
+
+			ret = rk_vendor_read(LAN_MAC_ID, ethaddr, ETH_ALEN * MAX_ETH);
+			if (ret != ETH_ALEN * MAX_ETH)
+				dev_err(dev, "%s: id: %d rk_vendor_read eth mac address failed (%d)\n",
+					__func__, id, ret);
+		} else {
+			memcpy(addr, &ethaddr[id * ETH_ALEN], ETH_ALEN);
+		}
+
+	}
 out:
 	dev_err(dev, "%s: mac address: %pM\n", __func__, addr);
 }

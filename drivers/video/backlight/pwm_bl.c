@@ -25,6 +25,9 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 
+static int noovobacklight_id = 0;
+static int eeprombacklight_id = 0;
+
 struct pwm_bl_data {
 	struct pwm_device	*pwm;
 	struct device		*dev;
@@ -45,6 +48,30 @@ struct pwm_bl_data {
 	int			(*check_fb)(struct device *, struct fb_info *);
 	void			(*exit)(struct device *);
 };
+
+
+static int __init eeprombacklight_setup(char *str)
+{
+	if(str[0]==0x0)
+		return 0;
+	if(str[0]==0x31)
+		eeprombacklight_id = 32;
+	printk("%s %d\n",__func__,eeprombacklight_id);
+	return 1;
+}
+__setup("androidboot.eeprom_backlight=", eeprombacklight_setup);
+
+static int __init noovobacklight_setup(char *str)
+{
+       if(!str)
+               return 0;
+       if(!strcmp("32cunlcd",str)){
+               noovobacklight_id =32 ;
+       }
+       printk("%s %d\n",__func__,noovobacklight_id);
+       return 1;
+}
+__setup("androidboot.noovobl.platform=", noovobacklight_setup);
 
 static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
 {
@@ -278,13 +305,19 @@ static int pwm_backlight_parse_dt(struct device *dev,
 		data->levels = devm_kzalloc(dev, size, GFP_KERNEL);
 		if (!data->levels)
 			return -ENOMEM;
-
-		ret = of_property_read_u32_array(node, "brightness-levels",
-						 data->levels,
-						 data->max_brightness);
-		if (ret < 0)
-			return ret;
-
+		if(eeprombacklight_id != 0){
+			noovobacklight_id = eeprombacklight_id;
+		}
+		printk("pwm_backlight_parse_dt : backlight_id:%d",noovobacklight_id);
+		if(noovobacklight_id == 32){
+			ret = of_property_read_u32_array(node, "brightness-levels2", data->levels,data->max_brightness);
+			if (ret < 0)
+				return ret;
+		}else{
+			ret = of_property_read_u32_array(node, "brightness-levels",data->levels,data->max_brightness);
+			if (ret < 0)
+				return ret;
+		}
 		ret = of_property_read_u32(node, "default-brightness-level",
 					   &value);
 		if (ret < 0)

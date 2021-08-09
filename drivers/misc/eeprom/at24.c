@@ -54,6 +54,8 @@
  * which won't work on pure SMBus systems.
  */
 
+static struct timing_id scala_disptiming;
+static struct panel_delay dispdelay;
 struct at24_client {
 	struct i2c_client *client;
 	struct regmap *regmap;
@@ -515,6 +517,25 @@ static void at24_properties_to_pdata(struct device *dev,
 		chip->page_size = 1;
 	}
 }
+void get_scala_timing(struct disp_timing *scalatiming){
+	memcpy(scalatiming,&scala_disptiming.scala_timing,sizeof(scala_disptiming.scala_timing));
+}
+
+void read_scala_disptiming(struct i2c_client *client){
+	client->addr= client->addr + EEPROM_BANK2;
+	i2c_smbus_read_i2c_block_data_or_emulated(client, DISP_START_REG_ADDR,sizeof(scala_disptiming), (u8 *)&scala_disptiming);
+	client->addr= client->addr - EEPROM_BANK2;
+}
+
+void get_scala_lcddelay(struct panel_delay *lcddelay){
+	memcpy(lcddelay,&dispdelay,sizeof(dispdelay));
+}
+
+void read_scala_dispdelay(struct i2c_client *client){
+	client->addr= client->addr + EEPROM_BANK2;
+	i2c_smbus_read_i2c_block_data_or_emulated(client, DELAY_START_REG_ADDR,sizeof(dispdelay), (u8 *)&dispdelay);
+	client->addr= client->addr - EEPROM_BANK2;
+}
 
 static int at24_get_pdata(struct device *dev, struct at24_platform_data *pdata)
 {
@@ -749,6 +770,8 @@ static int at24_probe(struct i2c_client *client)
 	if (pdata.setup)
 		pdata.setup(at24->nvmem, pdata.context);
 
+	read_scala_disptiming(client);
+	read_scala_dispdelay(client);
 	return 0;
 
 err_clients:

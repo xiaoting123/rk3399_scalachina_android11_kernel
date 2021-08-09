@@ -39,8 +39,10 @@
 #include <linux/of_graph.h>
 #include <video/videomode.h>
 #include "../rockchip/rockchip_drm_drv.h"
+#include <linux/platform_data/at24.h>
 int scanner_id;
 
+int eeprom_lcd_id =0;
 
 struct panel_cmd_header {
 	u8 data_type;
@@ -141,6 +143,9 @@ enum MCU_IOCTL {
 	MCU_WRDATA,
 	MCU_SETBYPASS,
 };
+
+static struct disp_timing lcdtiming;
+static struct panel_delay lcddelay;
 
 enum rockchip_spi_cmd_type {
 	SPI_3LINE_9BIT_MODE_CMD = 0,
@@ -683,6 +688,13 @@ static const struct drm_panel_funcs panel_simple_funcs = {
 	.get_timings = panel_simple_get_timings,
 };
 
+static int is_valid_delay_mode(void)
+{
+        if(( lcddelay.prepare_delay_ms != 0xffff) && (lcddelay.enable_delay_ms != 0xffff))
+            if((lcddelay.prepare_delay_ms > 0) && (lcddelay.enable_delay_ms > 0 ))
+                return 0;
+        return 1;
+}
 static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 {
 	struct device_node *backlight, *ddc;
@@ -691,6 +703,8 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 	int err;
 
 	panel = devm_kzalloc(dev, sizeof(*panel), GFP_KERNEL);
+	get_scala_lcddelay(&lcddelay);
+
 	if (!panel)
 		return -ENOMEM;
 
@@ -972,6 +986,22 @@ static const struct drm_display_mode lg_lp079qx1_sp6v_mode = {
 
 };
 
+struct drm_display_mode scala_timing_mode;
+
+static void set_disp_timing(void){
+    scala_timing_mode.clock = lcdtiming.clock_freq/1000;
+    scala_timing_mode.hdisplay = lcdtiming.hactive;
+    scala_timing_mode.hsync_start = lcdtiming.hactive + lcdtiming.hfront_porch;
+    scala_timing_mode.hsync_end = lcdtiming.hactive + lcdtiming.hback_porch + lcdtiming.hsync_len;
+    scala_timing_mode.htotal = lcdtiming.hactive + lcdtiming.hfront_porch + lcdtiming.hback_porch + lcdtiming.hsync_len;
+    scala_timing_mode.vdisplay = lcdtiming.vactive;
+    scala_timing_mode.vsync_start = lcdtiming.vactive + lcdtiming.vfront_porch;
+    scala_timing_mode.vsync_end = lcdtiming.vactive + lcdtiming.vback_porch + lcdtiming.vsync_len;
+    scala_timing_mode.vtotal = lcdtiming.vactive + lcdtiming.vback_porch + lcdtiming.vsync_len + lcdtiming.vfront_porch;
+    scala_timing_mode.vrefresh =lcdtiming.clock_freq/((scala_timing_mode.vtotal)*(scala_timing_mode.htotal));
+    scala_timing_mode.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC;
+}
+
 static const struct panel_desc lg_lp079qx1_sp0v = {
 .modes = &lg_lp079qx1_sp0v_mode,
 .num_modes = 1,
@@ -996,6 +1026,11 @@ static const struct panel_desc lg_lp079qx1_sp6v = {
 .modes = &lg_lp079qx1_sp6v_mode,
 .num_modes = 1,
 };
+struct panel_desc scala_timing = {
+    .modes = &scala_timing_mode,
+    .num_modes = 1,
+};
+
 static const struct panel_desc ampire_am800480r3tmqwa1h = {
 	.modes = &ampire_am800480r3tmqwa1h_mode,
 	.num_modes = 1,
@@ -3187,8 +3222,15 @@ static int panel_simple_of_get_desc_data(struct device *dev,
 		of_property_read_u32(np, "height-mm", &desc->size.height);
 	}
 
-	of_property_read_u32(np, "prepare-delay-ms", &desc->delay.prepare);
-	of_property_read_u32(np, "enable-delay-ms", &desc->delay.enable);
+
+	if(!is_valid_delay_mode()){
+		desc->delay.prepare = lcddelay.prepare_delay_ms;
+		desc->delay.enable = lcddelay.enable_delay_ms;
+	}else{
+		of_property_read_u32(dev->of_node, "prepare-delay-ms", &desc->delay.prepare);
+		of_property_read_u32(dev->of_node, "enable-delay-ms", &desc->delay.enable);
+	}
+
 	of_property_read_u32(np, "disable-delay-ms", &desc->delay.disable);
 	of_property_read_u32(np, "unprepare-delay-ms", &desc->delay.unprepare);
 	of_property_read_u32(np, "reset-delay-ms", &desc->delay.reset);
@@ -3227,9 +3269,105 @@ static int panel_simple_of_get_desc_data(struct device *dev,
 	return 0;
 }
 
+static int __init scanner_setup(char *str)
+         {
+  if(!str)
+          return 0;
+           if(!strcmp("lvds_21_5_out",str)){
+                             scanner_id =5 ;
+         }else if(!strcmp("edp_15_6",str)){
+                                                    scanner_id = 10;
+
+         }else if(!strcmp("lvds_18_5",str)){
+                                                    scanner_id = 30;
+                                                                  }
+           else if(!strcmp("lvds_21_5",str)){
+                             scanner_id =5 ;
+           }
+           else if(!strcmp("AptusEDP116",str)){
+                             scanner_id =35 ;
+           }
+           else if(!strcmp("101HannStar",str)){
+                             scanner_id =40 ;
+           }
+           else if(!strcmp("101lp",str)){
+                             scanner_id =45 ;
+           }
+           else if(!strcmp("lvds_10.1kucun",str)){
+                             scanner_id =15 ;
+           }
+           else if(!strcmp("lvds_11_6",str)){
+                             scanner_id =20 ;
+           }
+           else if(!strcmp("edp_15_62",str)){
+                             scanner_id =36 ;
+           }
+           else if(!strcmp("lvds_10.1edp",str)){
+                             scanner_id =25 ;
+           }
+           else if(!strcmp("oulingedp11_61080",str)){
+                             scanner_id =31 ;
+           }
+                              printk("%s %d\n",__func__,scanner_id);
+                                  return 1;
+                         }
+__setup("androidboot.noovo.platform=", scanner_setup);
+
+
+MODULE_DEVICE_TABLE(of, platform_of_match);
+static int __init eepromlcd_setup(char *str)
+         {
+  if(str[0]==0x0)
+          return 0;
+           if(!strcmp("lvds_215_1920*1080",str)){
+                             eeprom_lcd_id =5 ;
+         }else if(!strcmp("edp_156_1920*1080",str)){
+                                                    eeprom_lcd_id = 10;
+
+                                                                  }
+           else if(!strcmp("edp_116_1360*768",str)){
+                             eeprom_lcd_id =35 ;
+           }
+           else if(!strcmp("edp_116_1920*1080",str)){
+                             eeprom_lcd_id =31 ;
+           }
+           else if(!strcmp("lvds_320_1920*1080",str)){
+                             eeprom_lcd_id =5 ;
+           }
+           else if(!strcmp("lvds_185_1920*1080",str)){
+                             eeprom_lcd_id =5 ;
+           }
+                              printk("%s %d\n",__func__,eeprom_lcd_id);
+                                  return 1;
+                         }
+__setup("androidboot.eeprom_lcd=", eepromlcd_setup);
+
+static int is_valid_drm_mode(void)
+{
+	if((lcdtiming.hactive != 0xffff) &&(lcdtiming.vactive != 0xffff) )
+	    if((lcdtiming.clock_freq > 0) && (lcdtiming.hactive > 0 ) && (lcdtiming.vactive > 0 ))
+		    return 0;
+	return 1;
+}
+
+
 static int panel_simple_platform_probe(struct platform_device *pdev)
 {
-	printk("victor panel_simple_platform_probe\n");
+	const struct of_device_id *id;
+
+	id = of_match_node(platform_of_match, pdev->dev.of_node);
+	if (!id)
+		return -ENODEV;
+	if(eeprom_lcd_id !=0)
+	{
+		scanner_id = eeprom_lcd_id;
+	}
+	printk("panel_simple_platform_probe lcd_id=%d",scanner_id);
+	get_scala_timing(&lcdtiming);
+	if(!is_valid_drm_mode()){
+		set_disp_timing();
+		return panel_simple_probe(&pdev->dev, &scala_timing);
+	}else{
 			if(scanner_id == 5)
 				return panel_simple_probe(&pdev->dev, &lg_lp079qx1_sp0v);
 			else if(scanner_id ==10)
@@ -3244,7 +3382,7 @@ static int panel_simple_platform_probe(struct platform_device *pdev)
 				return panel_simple_probe(&pdev->dev, &lg_lp079qx1_sp6v);
 			else
 				return panel_simple_probe(&pdev->dev, &lg_lp079qx1_sp0v);
-
+	}
 }
 
 static int panel_simple_platform_remove(struct platform_device *pdev)
@@ -3556,11 +3694,7 @@ static int __init panel_simple_init(void)
 
 	return 0;
 }
-#ifdef CONFIG_ROCKCHIP_THUNDER_BOOT
-rootfs_initcall(panel_simple_init);
-#else
-module_init(panel_simple_init);
-#endif
+late_initcall(panel_simple_init);
 
 static void __exit panel_simple_exit(void)
 {
