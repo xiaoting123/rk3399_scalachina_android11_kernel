@@ -591,7 +591,7 @@
 		clock-names = "saradc", "apb_pclk";
 		resets = <&cru SRST_P_SARADC>;
 		reset-names = "saradc-apb";
-		status = "disabled";
+		status = "okay";
 	};
 
 	i2c1: i2c@ff110000 {
@@ -2627,7 +2627,7 @@
 		};
 
 		i2s0 {
-			i2s0_2ch_bus: i2s0-2ch-bus {
+			/*i2s0_2ch_bus: i2s0-2ch-bus {
 				rockchip,pins =
 					<3 RK_PD0 1 &pcfg_pull_none>,
 					<3 RK_PD1 1 &pcfg_pull_none>,
@@ -2635,7 +2635,7 @@
 					<3 RK_PD3 1 &pcfg_pull_none>,
 					<3 RK_PD7 1 &pcfg_pull_none>,
 					<4 RK_PA0 1 &pcfg_pull_none>;
-			};
+			};*/
 
 			i2s0_8ch_bus: i2s0-8ch-bus {
 				rockchip,pins =

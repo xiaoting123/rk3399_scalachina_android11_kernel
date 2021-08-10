@@ -86,6 +86,8 @@ extern int rt3261_headset_mic_detect(int jack_insert);
 extern int cx2072x_jack_report(void);
 #endif
 
+extern int flag_hdmi_xt;
+
 /* headset private data */
 struct headset_priv {
 	struct input_dev *input_dev;
@@ -169,6 +171,7 @@ static irqreturn_t headset_interrupt(int irq, void *dev_id)
 		headset_info->headset_status ? "in" : "out");
 
 	if (headset_info->headset_status == HEADSET_IN) {
+		gpio_direction_output(45,0);
 		if (pdata->chan != 0) {
 			/* detect Hook key */
 			schedule_delayed_work(
@@ -189,7 +192,12 @@ static irqreturn_t headset_interrupt(int irq, void *dev_id)
 			irq_set_irq_type(headset_info->irq[HEADSET],
 					 IRQF_TRIGGER_RISING);
 	} else if (headset_info->headset_status == HEADSET_OUT) {
-		headset_info->cur_headset_status = HEADSET_OUT;
+		//headset_info->cur_headset_status = HEADSET_OUT;
+		if(flag_hdmi_xt == 0)
+		{
+			gpio_direction_output(45,1);
+		}
+		headset_info->cur_headset_status = BIT_HEADSET_NO_MIC;
 		cancel_delayed_work(&headset_info->hook_work);
 		if (headset_info->isMic) {
 			if (headset_info->hook_status == HOOK_DOWN) {
@@ -306,6 +314,8 @@ static void hook_once_work(struct work_struct *work)
 			(cx2072x_jack_report() == 3) ? BIT_HEADSET :
 						       BIT_HEADSET_NO_MIC;
 #endif
+
+headset_info->cur_headset_status = BIT_HEADSET_NO_MIC;
 	if (headset_info->cur_headset_status) {
 		if (headset_info->isMic) {
 			extcon_set_state_sync(headset_info->edev,
@@ -412,6 +422,13 @@ int rk_headset_adc_probe(struct platform_device *pdev,
 		dev_err(&pdev->dev, "failed to allocate extcon device\n");
 		ret = -ENOMEM;
 		goto failed;
+	}
+	ret = gpio_request(45,"codec_amp");
+		if(ret < 0)
+			{
+			printk("could not request 45 for codec_amp");
+			}else{
+			printk("request 45 for codec_amp ok");	
 	}
 	ret = devm_extcon_dev_register(&pdev->dev, headset->edev);
 	if (ret < 0) {

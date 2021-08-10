@@ -231,6 +231,8 @@
 #define ACLK_GIC_PRE			262
 #define ACLK_VOP0_PRE			263
 #define ACLK_VOP1_PRE			264
+//add scala
+#define SCLK_I2S_8CH			265
 
 /* pclk gates */
 #define PCLK_PERIHP			320

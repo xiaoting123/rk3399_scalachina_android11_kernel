@@ -298,32 +298,6 @@
 				/*cif_clkout*/
 				<2 RK_PB3 3 &pcfg_pull_none>;
 		};
-
-		isp_dvp_d0d7: isp-dvp-d0d7 {
-			rockchip,pins =
-				/*cif_data0*/
-				<2 RK_PA0 3 &pcfg_pull_none>,
-				/*cif_data1*/
-				<2 RK_PA1 3 &pcfg_pull_none>,
-				/*cif_data2*/
-				<2 RK_PA2 3 &pcfg_pull_none>,
-				/*cif_data3*/
-				<2 RK_PA3 3 &pcfg_pull_none>,
-				/*cif_data4*/
-				<2 RK_PA4 3 &pcfg_pull_none>,
-				/*cif_data5*/
-				<2 RK_PA5 3 &pcfg_pull_none>,
-				/*cif_data6*/
-				<2 RK_PA6 3 &pcfg_pull_none>,
-				/*cif_data7*/
-				<2 RK_PA7 3 &pcfg_pull_none>,
-				/*cif_sync*/
-				<2 RK_PB0 3 &pcfg_pull_none>,
-				/*cif_href*/
-				<2 RK_PB1 3 &pcfg_pull_none>,
-				/*cif_clkin*/
-				<2 RK_PB2 3 &pcfg_pull_none>;
-		};
 	};
 
 	buttons {

@@ -329,10 +329,6 @@
 	};
 };
 
-/*&es8316 {
-	reg = <0x11>;
-};*/
-
 &i2c6 {
 	status = "okay";
 	fusb0: fusb30x@22 {

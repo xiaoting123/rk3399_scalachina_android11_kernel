@@ -14,7 +14,7 @@
 
 #include <linux/clk.h>
 #include <linux/workqueue.h>
-#include <dt-bindings/sound/rt5640.h>
+#include <sound/rt5640.h>
 
 /* Info */
 #define RT5640_RESET				0x00
@@ -180,6 +180,8 @@
 #define RT5640_EQ_GN_HIP2			0xb2
 #define RT5640_EQ_PRE_VOL			0xb3
 #define RT5640_EQ_PST_VOL			0xb4
+/* General Control */
+#define RT5640_GEN_CTRL1			0xfa
 
 /* global definition */
 #define RT5640_L_MUTE				(0x1 << 15)
@@ -2065,6 +2067,10 @@ enum {
 #define RT5640_HEADSET_DET	BIT(1)
 #define RT5640_HEADPHO_DET	BIT(2)
 
+/* General Control1 (0xfa) */
+#define RT5640_M_MAMIX_L			(0x1 << 13)
+#define RT5640_M_MAMIX_R			(0x1 << 12)
+
 /* System Clock Source */
 #define RT5640_SCLK_S_MCLK	0
 #define RT5640_SCLK_S_PLL1	1
@@ -2121,6 +2127,7 @@ enum {
 
 struct rt5640_priv {
 	struct snd_soc_component *component;
+	struct rt5640_platform_data pdata;
 	struct regmap *regmap;
 	struct clk *mclk;
 
@@ -2154,6 +2161,7 @@ struct rt5640_priv {
 	unsigned int ovcd_th;
 	unsigned int ovcd_sf;
 };
+extern int flag_hdmi_xt;
 
 int rt5640_dmic_enable(struct snd_soc_component *component,
 		       bool dmic1_data_pin, bool dmic2_data_pin);

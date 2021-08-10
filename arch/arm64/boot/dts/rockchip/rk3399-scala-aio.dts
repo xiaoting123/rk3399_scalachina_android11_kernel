@@ -90,7 +90,7 @@
 };
 
 &edp_in_vopl {
-status = "okay";
+	status = "okay";
 };
 
 &edp_in_vopb {
@@ -103,21 +103,21 @@ status = "disabled";
 };
 
 &hdmi_in_vopl {
-status = "disabled";
+	status = "disabled";
 };
 
 &hdmi_in_vopb {
-status = "okay";
+	status = "okay";
 };
 
 &vopb {
-assigned-clocks = <&cru DCLK_VOP0_DIV>;
-assigned-clock-parents = <&cru PLL_VPLL>;
+	assigned-clocks = <&cru DCLK_VOP0_DIV>;
+	assigned-clock-parents = <&cru PLL_VPLL>;
 };
 
 &vopl {
-assigned-clocks = <&cru DCLK_VOP1_DIV>;
-assigned-clock-parents = <&cru PLL_CPLL>;
+	assigned-clocks = <&cru DCLK_VOP1_DIV>;
+	assigned-clock-parents = <&cru PLL_CPLL>;
 };
 
 &i2c4 {

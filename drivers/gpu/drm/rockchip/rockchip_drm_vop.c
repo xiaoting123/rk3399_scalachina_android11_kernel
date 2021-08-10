@@ -33,6 +33,7 @@
 #include <linux/clk.h>
 #include <linux/iopoll.h>
 #include <linux/of.h>
+#include <linux/gpio.h>
 #include <linux/of_device.h>
 #include <linux/pm_runtime.h>
 #include <linux/component.h>
@@ -45,6 +46,7 @@
 #include <linux/sort.h>
 #include <soc/rockchip/rockchip_dmc.h>
 #include <soc/rockchip/rockchip-system-status.h>
+#include <uapi/drm/rockchip_drm.h>
 #include <uapi/linux/videodev2.h>
 
 #include "../drm_internal.h"
@@ -54,6 +56,8 @@
 #include "rockchip_drm_fb.h"
 #include "rockchip_drm_psr.h"
 #include "rockchip_drm_vop.h"
+#include "rockchip_drm_backlight.h"
+int flag_hdmi_xt=0;
 
 #define VOP_REG_SUPPORT(vop, reg) \
 		(reg.mask && \
@@ -1532,7 +1536,8 @@ static void vop_initial(struct drm_crtc *crtc)
 
 static void vop_crtc_atomic_disable(struct drm_crtc *crtc,
 				    struct drm_crtc_state *old_state)
-{
+{	
+	struct rockchip_crtc_state *s = to_rockchip_crtc_state(crtc->state);
 	struct vop *vop = to_vop(crtc);
 	int sys_status = drm_crtc_index(crtc) ?
 				SYS_STATUS_LCDC1 : SYS_STATUS_LCDC0;
@@ -1554,6 +1559,13 @@ static void vop_crtc_atomic_disable(struct drm_crtc *crtc,
 	 * we must wait standby complete when we want to disable aclk,
 	 * if not, memory bus maybe dead.
 	 */
+	if(s->output_type==DRM_MODE_CONNECTOR_HDMIA)
+	{
+		flag_hdmi_xt = 0;
+		if( 0== gpio_get_value(67)){
+			gpio_direction_output(45,1);
+		}
+	}
 	reinit_completion(&vop->dsp_hold_completion);
 	vop_dsp_hold_valid_irq_enable(vop);
 
@@ -2268,6 +2280,7 @@ static int vop_crtc_enable_vblank(struct drm_crtc *crtc)
 
 static void vop_crtc_disable_vblank(struct drm_crtc *crtc)
 {
+	struct rockchip_crtc_state *s = to_rockchip_crtc_state(crtc->state);
 	struct vop *vop = to_vop(crtc);
 	unsigned long flags;
 
@@ -3054,6 +3067,8 @@ static void vop_crtc_atomic_enable(struct drm_crtc *crtc,
 		VOP_CTRL_SET(vop, hdmi_en, 1);
 		VOP_CTRL_SET(vop, hdmi_pin_pol, val);
 		VOP_CTRL_SET(vop, hdmi_dclk_pol, 1);
+		flag_hdmi_xt = 1;
+		gpio_direction_output(45,0);
 		break;
 	case DRM_MODE_CONNECTOR_DSI:
 		VOP_CTRL_SET(vop, mipi_en, 1);

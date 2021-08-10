@@ -219,6 +219,8 @@ source "drivers/visorbus/Kconfig"
 
 source "drivers/siox/Kconfig"
 
+source "drivers/switch/Kconfig"
+
 source "drivers/slimbus/Kconfig"
 
 source "drivers/energy_model/Kconfig"
