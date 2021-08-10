@@ -206,10 +206,11 @@
 		regulator-boot-on;
 	};
 
-	es8316-sound {
+	rt5640-sound {
+		status = "okay";
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
-		simple-audio-card,name = "rockchip,es8316-codec";
+		simple-audio-card,name = "rockchip,rt5640-codec";
 		simple-audio-card,mclk-fs = <256>;
 		simple-audio-card,widgets =
 			"Microphone", "Mic Jack",
@@ -223,8 +224,17 @@
 			sound-dai = <&i2s0>;
 		};
 		simple-audio-card,codec {
-			sound-dai = <&es8316>;
+			sound-dai = <&rt5640>;
 		};
+	};
+	
+	rk_headset {
+		compatible = "rockchip_headset";
+		headset_gpio = <&gpio2 3 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&hp_det>;
+		io-channels = <&saradc 2>;
+		status = "okay";
 	};
 
 	hdmi_sound: hdmi-sound {
@@ -447,17 +457,17 @@
 	i2c-scl-rising-time-ns = <300>;
 	i2c-scl-falling-time-ns = <15>;
 
-	es8316: es8316@10 {
+	rt5640: rt5640@1c {
+		status = "okay";
 		#sound-dai-cells = <0>;
-		compatible = "everest,es8316";
-		reg = <0x10>;
+		compatible = "realtek,rt5640";
+		reg = <0x1c>;
 		clocks = <&cru SCLK_I2S_8CH_OUT>;
 		clock-names = "mclk";
+		spk-ctl-gpio = <&gpio1 13 GPIO_ACTIVE_LOW>;
+		realtek,in1-differential;
 		pinctrl-names = "default";
 		pinctrl-0 = <&i2s_8ch_mclk>;
-		spk-con-gpio = <&gpio0 11 GPIO_ACTIVE_HIGH>;
-		hp-det-gpio = <&gpio4 28 GPIO_ACTIVE_LOW>;
-		status = "disabled";
 	};
 };
 
