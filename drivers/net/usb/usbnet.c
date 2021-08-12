@@ -1741,25 +1741,21 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	//scala add for 4G
 	printk("usbnet:name=%s \r\n",udev->dev.driver->name);
 	if (strcmp(udev->dev.driver->name, s1) == 0) {
-		strcpy (net->name, "lte%d");
-		printk("scala name %s!!!!\n",s1);
-		msleep(1000);
-	if (!is_zero_ether_addr((u8*)eeprom_lte_mac_addr))			
-	{
+		if (!is_zero_ether_addr((u8*)eeprom_lte_mac_addr))			
+		{
 			for(i=0;i<6;i++){
 			node_id[i] = eeprom_lte_mac_addr[i];}
-	}
-	if (is_zero_ether_addr(node_id)){		
-		ret = rk_vendor_read(BT_MAC_ID, node_id, 6);
-		if(ret != 6 || is_zero_ether_addr(node_id)){
-			random_ether_addr(node_id);
+		}
+		if (is_zero_ether_addr(node_id)){		
+			ret = rk_vendor_read(BT_MAC_ID, node_id, 6);
+			if(ret != 6 || is_zero_ether_addr(node_id)){
+				random_ether_addr(node_id);
 			}
-		
 		}
-		}
-		else{
-			random_ether_addr(node_id);
-		}
+	}
+	else{
+		random_ether_addr(node_id);
+	}
 
 	memcpy (net->dev_addr, node_id, sizeof node_id);
 	msleep(1000);
@@ -1787,8 +1783,15 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 		// can rename the link if it knows better.
 		if ((dev->driver_info->flags & FLAG_ETHER) != 0 &&
 		    ((dev->driver_info->flags & FLAG_POINTTOPOINT) == 0 ||
-		     (net->dev_addr [0] & 0x02) == 0) && strcmp(udev->dev.driver->name,s1) !=0)
-			strcpy (net->name, "eth%d");
+		     (net->dev_addr [0] & 0x02) == 0)){
+			if(strcmp(udev->dev.driver->name,s1))
+				strcpy (net->name, "eth%d");
+			else
+				strcpy (net->name, "lte%d");
+        }else{
+            if(!strcmp(udev->dev.driver->name,s1))
+                strcpy (net->name, "lte%d");
+        }
 		/* WLAN devices should always be named "wlan%d" */
 		if ((dev->driver_info->flags & FLAG_WLAN) != 0)
 			strcpy(net->name, "wlan%d");

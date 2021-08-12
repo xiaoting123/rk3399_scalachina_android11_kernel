@@ -180,7 +180,6 @@ static u16 QMIDMSGetMEIDReqSize( void )
    return sizeof( sQMUX ) + 7;
 }
 
-#ifdef QUECTEL_WWAN_QMAP
 struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV_QOS
 {
    u8  TLVType;
@@ -216,9 +215,10 @@ struct QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG
     struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV DownlinkDataAggregationMaxDatagramsTlv;
     struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV DownlinkDataAggregationMaxSizeTlv;
     struct QMIWDS_ENDPOINT_TLV epTlv;
-    //struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV  dl_minimum_padding;
+    struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV  dl_minimum_padding;
+    struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV UplinkDataAggregationMaxDatagramsTlv;
+    struct QMIWDS_ADMIN_SET_DATA_FORMAT_TLV UplinkDataAggregationMaxSizeTlv;
 } __packed;
-#endif
 
 /*===========================================================================
 METHOD:
@@ -230,9 +230,9 @@ DESCRIPTION:
 RETURN VALUE:
    u16 - size of buffer
 ===========================================================================*/
-static u16 QMIWDASetDataFormatReqSize( int qmap_mode )
+static u16 QMIWDASetDataFormatReqSize( int qmap_version )
 {
-if (qmap_mode)
+if (qmap_version)
    return sizeof( sQMUX ) + sizeof(struct QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG);
 else
    return sizeof( sQMUX ) + 18;
@@ -818,10 +818,10 @@ RETURN VALUE:
 static int QMIWDASetDataFormatReq(
    void *   pBuffer,
    u16      buffSize,
-   bool     bRawIPMode, int qmap_mode, u32 rx_size,
+   bool     bRawIPMode, int qmap_version, u32 rx_size,
    u16      transactionID )
 {
-if (qmap_mode) {
+if (qmap_version) {
     struct QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG *pMUXMsg = (struct QMIWDS_ADMIN_SET_DATA_FORMAT_REQ_MSG *)(pBuffer + sizeof( sQMUX ));
 
     pMUXMsg->CtlFlags = 0x00;
@@ -840,11 +840,11 @@ if (qmap_mode) {
 //Uplink (UL) data aggregation protocol to be used for uplink data transfer.
     pMUXMsg->UplinkDataAggregationProtocolTlv.TLVType = 0x12; 
     pMUXMsg->UplinkDataAggregationProtocolTlv.TLVLength = cpu_to_le16(4);
-    pMUXMsg->UplinkDataAggregationProtocolTlv.Value = cpu_to_le32(0x05); //UL QMAP is enabled
+    pMUXMsg->UplinkDataAggregationProtocolTlv.Value = cpu_to_le32(qmap_version); //UL QMAP is enabled
 //Downlink (DL) data aggregation protocol to be used for downlink data transfer
     pMUXMsg->DownlinkDataAggregationProtocolTlv.TLVType = 0x13; 
     pMUXMsg->DownlinkDataAggregationProtocolTlv.TLVLength = cpu_to_le16(4);
-    pMUXMsg->DownlinkDataAggregationProtocolTlv.Value = cpu_to_le32(0x05); //UL QMAP is enabled
+    pMUXMsg->DownlinkDataAggregationProtocolTlv.Value = cpu_to_le32(qmap_version); //UL QMAP is enabled
 //Maximum number of datagrams in a single aggregated packet on downlink
     pMUXMsg->DownlinkDataAggregationMaxDatagramsTlv.TLVType = 0x15; 
     pMUXMsg->DownlinkDataAggregationMaxDatagramsTlv.TLVLength = cpu_to_le16(4);
@@ -858,17 +858,21 @@ if (qmap_mode) {
     pMUXMsg->epTlv.TLVLength = cpu_to_le16(8);
     pMUXMsg->epTlv.ep_type = cpu_to_le32(0x02); // DATA_EP_TYPE_BAM_DMUX
     pMUXMsg->epTlv.iface_id = cpu_to_le32(0x04); 
-
-#if 0
 //Specifies the minimum padding bytes to be added in between aggregated downlink QMAP packets.
     pMUXMsg->dl_minimum_padding.TLVType = 0x19; 
     pMUXMsg->dl_minimum_padding.TLVLength = cpu_to_le16(4);
     pMUXMsg->dl_minimum_padding.Value = cpu_to_le32(0);
-#endif
-
+//Maximum number of datagrams in a single aggregated packet on uplink
+    pMUXMsg->UplinkDataAggregationMaxDatagramsTlv.TLVType = 27; 
+    pMUXMsg->UplinkDataAggregationMaxDatagramsTlv.TLVLength = cpu_to_le16(4);
+    pMUXMsg->UplinkDataAggregationMaxDatagramsTlv.Value = cpu_to_le32(11);
+//Maximum size in bytes of a single aggregated packet allowed on uplink
+    pMUXMsg->UplinkDataAggregationMaxSizeTlv.TLVType = 28; 
+    pMUXMsg->UplinkDataAggregationMaxSizeTlv.TLVLength = cpu_to_le16(4);
+    pMUXMsg->UplinkDataAggregationMaxSizeTlv.Value = cpu_to_le32(8*1024);
 }
 else {
-   if (pBuffer == 0 || buffSize < QMIWDASetDataFormatReqSize(qmap_mode) )
+   if (pBuffer == 0 || buffSize < QMIWDASetDataFormatReqSize(qmap_version) )
    {
       return -ENOMEM;
    }
@@ -919,7 +923,7 @@ if (bRawIPMode) { //#ifdef DATA_MODE_RP
 }
 
    // success
-   return QMIWDASetDataFormatReqSize(qmap_mode);
+   return QMIWDASetDataFormatReqSize(qmap_version);
 }
 
 #if 0
@@ -1395,7 +1399,7 @@ RETURN VALUE:
 ===========================================================================*/
 static int QMIWDASetDataFormatResp(
    void *   pBuffer,
-   u16      buffSize, bool bRawIPMode, int *qmap_enabled, int *rx_size, int *tx_size)
+   u16      buffSize, bool bRawIPMode, int *qmap_version, int *rx_size, int *tx_size, QMAP_SETTING *set)
 {
 
    int result;
@@ -1454,12 +1458,20 @@ if (bRawIPMode) { ////#ifdef DATA_MODE_RP
    DBG("Data Format Set to Ethernet Mode \n");
 } //#endif
 
-    GetTLV( pBuffer, buffSize, 0x12, qmap_enabled, 4);
-    if (le32_to_cpu(*qmap_enabled) == 5)
-        GetTLV( pBuffer, buffSize, 0x13, qmap_enabled, 4);
+    GetTLV( pBuffer, buffSize, 0x12, qmap_version, 4);
+    if (le32_to_cpu(*qmap_version))
+        GetTLV( pBuffer, buffSize, 0x13, qmap_version, 4);
 
     GetTLV( pBuffer, buffSize, 0x16, rx_size, 4);
     GetTLV( pBuffer, buffSize, 0x18, tx_size, 4);
+
+    if (set) {
+        GetTLV( pBuffer, buffSize, 0x15, &set->dl_data_aggregation_max_datagrams, 4);
+        GetTLV( pBuffer, buffSize, 0x16, &set->dl_data_aggregation_max_size, 4);
+        GetTLV( pBuffer, buffSize, 0x17, &set->ul_data_aggregation_max_datagrams, 4);
+        GetTLV( pBuffer, buffSize, 0x18, &set->ul_data_aggregation_max_size, 4);
+        GetTLV( pBuffer, buffSize, 0x1a, &set->dl_minimum_padding, 4);
+    }
 
    return pktLinkProtocol[0];
 }

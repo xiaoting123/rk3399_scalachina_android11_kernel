@@ -53,10 +53,18 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <linux/kthread.h>
 #include <linux/poll.h>
 #include <linux/completion.h>
+#include <linux/hrtimer.h>
+#include <linux/interrupt.h>
 
-#define QUECTEL_WWAN_QMAP 8
+#define QUECTEL_WWAN_QMAP 4 //MAX is 7
 #ifdef QUECTEL_WWAN_QMAP
 #define QUECTEL_QMAP_MUX_ID 0x81
+#endif
+
+//#define QUECTEL_QMI_MERGE
+
+#if defined(CONFIG_BRIDGE) || defined(CONFIG_BRIDGE_MODULE) 
+#define QUECTEL_BRIDGE_MODE
 #endif
 
 #if (LINUX_VERSION_CODE <= KERNEL_VERSION( 2,6,21 ))
@@ -159,6 +167,20 @@ static inline void usb_mark_last_busy(struct usb_device *udev)
 
 // Used in recursion, defined later below
 struct sGobiUSBNet;
+
+
+#if defined(QUECTEL_WWAN_QMAP)
+#define QUECTEL_UL_DATA_AGG 1
+
+#if defined(QUECTEL_UL_DATA_AGG)
+struct ul_agg_ctx {
+	/* QMIWDS_ADMIN_SET_DATA_FORMAT_RESP TLV_0x17 and TLV_0x18 */
+	uint ul_data_aggregation_max_datagrams; //UplinkDataAggregationMaxDatagramsTlv
+	uint ul_data_aggregation_max_size; //UplinkDataAggregationMaxSizeTlv
+	uint dl_minimum_padding;
+};
+#endif
+#endif
 
 /*=========================================================================*/
 // Struct sReadMemList
@@ -278,6 +300,24 @@ typedef struct sURBSetupPacket
 // Common value for sURBSetupPacket.mLength
 #define DEFAULT_READ_URB_LENGTH 0x1000
 
+#ifdef QUECTEL_QMI_MERGE
+#define MERGE_PACKET_IDENTITY 0x2c7c
+#define MERGE_PACKET_VERSION 0x0001
+#define MERGE_PACKET_MAX_PAYLOAD_SIZE 56
+typedef struct sQMIMsgHeader {
+    u16 idenity;
+    u16 version;
+    u16 cur_len;
+    u16 total_len;
+} sQMIMsgHeader;
+
+typedef struct sQMIMsgPacket {
+    sQMIMsgHeader header;
+    u16 len;
+    char buf[DEFAULT_READ_URB_LENGTH];
+} sQMIMsgPacket;
+#endif
+
 #ifdef CONFIG_PM
 #if (LINUX_VERSION_CODE < KERNEL_VERSION( 2,6,29 ))
 /*=========================================================================*/
@@ -347,6 +387,10 @@ typedef struct sQMIDev
    struct timer_list mReadUrbTimer;
 #endif
 
+#ifdef QUECTEL_QMI_MERGE
+   sQMIMsgPacket * mpQmiMsgPacket;
+#endif
+
    /* Read setup packet */
    sURBSetupPacket *          mpReadSetupPacket;
 
@@ -371,6 +415,15 @@ typedef struct sQMIDev
 
 } sQMIDev;
 
+typedef struct {
+	u32 qmap_enabled;
+	u32 dl_data_aggregation_max_datagrams;
+	u32 dl_data_aggregation_max_size ;
+	u32 ul_data_aggregation_max_datagrams; 
+	u32 ul_data_aggregation_max_size;
+	u32 dl_minimum_padding;
+} QMAP_SETTING;
+
 /*=========================================================================*/
 // Struct sGobiUSBNet
 //
@@ -383,9 +436,19 @@ typedef struct sGobiUSBNet
    /* Net device structure */
    struct usbnet *        mpNetDev;
 #ifdef QUECTEL_WWAN_QMAP
-   int m_qmap_mode;
+   unsigned link_state;
+   int qmap_mode;
+   int qmap_size;
+   int qmap_version;
    struct net_device	*mpQmapNetDev[QUECTEL_WWAN_QMAP];
-#ifdef CONFIG_BRIDGE
+   struct tasklet_struct	txq;
+
+   QMAP_SETTING qmap_settings;
+#if defined(QUECTEL_UL_DATA_AGG)
+   struct ul_agg_ctx agg_ctx;
+#endif
+
+#ifdef QUECTEL_BRIDGE_MODE
    int m_qmap_bridge_mode[QUECTEL_WWAN_QMAP];
 #endif
 #endif
@@ -395,7 +458,7 @@ typedef struct sGobiUSBNet
     bool                   mbMdm9x06;	//for BG96
    /* QMI "device" work in IP Mode or ETH Mode */
    bool                   mbRawIPMode;
-#ifdef CONFIG_BRIDGE
+#ifdef QUECTEL_BRIDGE_MODE
    int m_bridge_mode;
    uint m_bridge_ipv4;
    unsigned char     mHostMAC[6];
@@ -405,6 +468,8 @@ typedef struct sGobiUSBNet
 
    struct completion mQMIReadyCompletion;
    bool                   mbQMIReady;
+   bool                   mbProbeDone;
+   bool                   mbQMISyncIng;
 
    /* Usb device interface */
    struct usb_interface * mpIntf;
@@ -431,7 +496,13 @@ typedef struct sGobiUSBNet
 
    /* Device MEID */
    char                   mMEID[14];
-   
+    struct hrtimer timer;
+    struct tasklet_struct bh;
+    unsigned long
+        pending_num : 8,
+        pending_size : 16;
+    struct sk_buff *pending_pool[16];
+
 #ifdef CONFIG_PM
    #if (LINUX_VERSION_CODE < KERNEL_VERSION( 2,6,29 ))   
    /* AutoPM thread */

@@ -242,6 +242,25 @@ static u8 QMIXactionIDGet( sGobiUSBNet *pDev)
       transactionID = atomic_add_return( 1, &pDev->mQMIDev.mQMICTLTransactionID );
    }
    
+#if 1 //free these ununsed qmi response, or when these transactionID re-used, they will be regarded as qmi response of the qmi request that have same transactionID
+    if (transactionID) {
+        unsigned long flags;
+        void * pReadBuffer;
+        u16 readBufferSize;
+   
+         spin_lock_irqsave( &pDev->mQMIDev.mClientMemLock, flags );
+         while (PopFromReadMemList( pDev,
+                                 QMICTL,
+                                 transactionID,
+                                 &pReadBuffer,
+                                 &readBufferSize ) == true)
+        {
+            kfree( pReadBuffer );
+        }
+        spin_unlock_irqrestore( &pDev->mQMIDev.mClientMemLock, flags );
+    }
+#endif
+
    return transactionID;
 }
 
@@ -408,6 +427,11 @@ void QuecGobiClearDownReason(
 #else
    if (pDev->mDownReason == 0)
    {
+#ifdef QUECTEL_WWAN_QMAP
+      if (pDev->qmap_mode && !pDev->link_state)
+         ;
+      else
+#endif
       netif_carrier_on( pDev->mpNetDev->net );
    }
 #endif
@@ -490,6 +514,48 @@ static int ResubmitIntURB( struct urb * pIntURB )
    return status;
 }
 
+
+#ifdef QUECTEL_QMI_MERGE
+static int MergeRecQmiMsg( sQMIDev * pQMIDev, struct urb * pReadURB )
+{
+   sQMIMsgHeader * mHeader;
+   sQMIMsgPacket * mPacket;
+
+   DBG( "%s called \n", __func__ );
+   mPacket = pQMIDev->mpQmiMsgPacket;
+
+   if(pReadURB->actual_length < sizeof(sQMIMsgHeader))
+   {
+       return -1;
+   }
+
+   mHeader = (sQMIMsgHeader *)pReadURB->transfer_buffer;
+   if(le16_to_cpu(mHeader->idenity) != MERGE_PACKET_IDENTITY || le16_to_cpu(mHeader->version) != MERGE_PACKET_VERSION || le16_to_cpu(mHeader->cur_len) > le16_to_cpu(mHeader->total_len)) 
+       return -1;
+
+   if(le16_to_cpu(mHeader->cur_len) == le16_to_cpu(mHeader->total_len)) {
+        mPacket->len = le16_to_cpu(mHeader->total_len);
+        memcpy(pReadURB->transfer_buffer, pReadURB->transfer_buffer + sizeof(sQMIMsgHeader), mPacket->len);
+        pReadURB->actual_length = mPacket->len;
+        mPacket->len = 0;
+ 
+        return 0;
+   } 
+
+   memcpy(mPacket->buf + mPacket->len, pReadURB->transfer_buffer + sizeof(sQMIMsgHeader), le16_to_cpu(mHeader->cur_len));
+   mPacket->len += le16_to_cpu(mHeader->cur_len);
+
+   if (le16_to_cpu(mHeader->cur_len) < MERGE_PACKET_MAX_PAYLOAD_SIZE || mPacket->len >= le16_to_cpu(mHeader->total_len)) {       
+        memcpy(pReadURB->transfer_buffer, mPacket->buf, mPacket->len);
+        pReadURB->actual_length = mPacket->len;
+        mPacket->len = 0;
+        return 0;           
+   }
+
+   return -1;
+}
+#endif
+
 /*===========================================================================
 METHOD:
    ReadCallback (Public Method)
@@ -549,6 +615,16 @@ static void ReadCallback(struct urb *pReadURB, struct pt_regs *regs)
    }
    DBG( "Read %d bytes\n", pReadURB->actual_length );
    
+#ifdef QUECTEL_QMI_MERGE
+   if(MergeRecQmiMsg(&pDev->mQMIDev, pReadURB))
+   {
+      DBG( "not a full packet, read again\n");
+      // Resubmit the interrupt URB
+      ResubmitIntURB( pDev->mQMIDev.mpIntURB );
+      return;
+   }
+#endif
+ 
    pData = pReadURB->transfer_buffer;
    dataSize = pReadURB->actual_length;
 
@@ -773,6 +849,7 @@ static void IntCallback(struct urb *pIntURB, struct pt_regs *regs)
               DBG( "resuming traffic due to CONNECTION_SPEED_CHANGE\n" );
            }
          }
+      break;
       default:
          {
              DBG( "ignoring invalid interrupt in packet\n" );
@@ -919,6 +996,25 @@ int QuecStartRead( sGobiUSBNet * pDev )
       return -ENXIO;
    }
 
+#ifdef QUECTEL_QMI_MERGE
+   pDev->mQMIDev.mpQmiMsgPacket = kmalloc( sizeof(sQMIMsgPacket), GFP_KERNEL );
+   if (pDev->mQMIDev.mpQmiMsgPacket == NULL)
+   {
+      DBG( "Error allocating qmi msg merge packet buffer!\n" );
+      kfree(pDev->mQMIDev.mpReadSetupPacket);
+      pDev->mQMIDev.mpReadSetupPacket = NULL;
+      kfree( pDev->mQMIDev.mpIntBuffer );
+      pDev->mQMIDev.mpIntBuffer = NULL;
+      kfree( pDev->mQMIDev.mpReadBuffer );
+      pDev->mQMIDev.mpReadBuffer = NULL;
+      usb_free_urb( pDev->mQMIDev.mpIntURB );
+      pDev->mQMIDev.mpIntURB = NULL;
+      usb_free_urb( pDev->mQMIDev.mpReadURB );
+      pDev->mQMIDev.mpReadURB = NULL;
+      return -ENOMEM;
+   }   
+#endif
+
    // Interval needs reset after every URB completion
    interval = max((int)(pendp->bInterval),
                   (pDev->mpNetDev->udev->speed == USB_SPEED_HIGH) ? 7 : 3);
@@ -983,6 +1079,11 @@ void QuecKillRead( sGobiUSBNet * pDev )
    pDev->mQMIDev.mpReadURB = NULL;
    usb_free_urb( pDev->mQMIDev.mpIntURB );
    pDev->mQMIDev.mpIntURB = NULL;
+
+#ifdef QUECTEL_QMI_MERGE
+   kfree( pDev->mQMIDev.mpQmiMsgPacket );
+   pDev->mQMIDev.mpQmiMsgPacket = NULL;
+#endif
 }
 
 /*=========================================================================*/
@@ -1201,9 +1302,11 @@ static int ReadSync(
 
       // Wait for notification
       result = down_interruptible( &readSem.readSem );
-	  if (result == -EINTR) {
-		  result = down_timeout(&readSem.readSem, msecs_to_jiffies(200));
-	  }
+      //if (result) INFO("down_interruptible = %d\n", result);
+      if (result == -EINTR) {
+         result = down_timeout(&readSem.readSem, msecs_to_jiffies(200));
+         //if (result) INFO("down_timeout = %d\n", result);
+      }
       if (result != 0)
       {
          DBG( "Down Timeout %d\n", result );
@@ -1339,7 +1442,7 @@ static int WriteSync(
    }
 
    // CDC Send Encapsulated Request packet
-   writeSetup = kmalloc(sizeof(sURBSetupPacket *), GFP_KERNEL);
+   writeSetup = kmalloc(sizeof(sURBSetupPacket), GFP_KERNEL);
    writeSetup->mRequestType = 0x21;
    writeSetup->mRequestCode = 0;
    writeSetup->mValue = 0;
@@ -1415,10 +1518,13 @@ static int WriteSync(
       {
          // This shouldn't happen
          DBG( "Didn't get write URB back\n" );
+         //advoid ReleaseClientID() free again (no PopFromURBList)
       }
-
+      else
+      {
       usb_free_urb( pWriteURB );
       kfree(writeSetup);
+      }
 
       // End critical section
       spin_unlock_irqrestore( &pDev->mQMIDev.mClientMemLock, flags );
@@ -1434,9 +1540,11 @@ static int WriteSync(
    {
       // Allow user interrupts
       result = down_interruptible( &writeSem );
-	  if (result == -EINTR) {
-		  result = down_timeout(&writeSem, msecs_to_jiffies(200));
-	  }
+      //if (result) INFO("down_interruptible = %d\n", result);
+      if (result == -EINTR) {
+         result = down_timeout(&writeSem, msecs_to_jiffies(200));
+         //if (result) INFO("down_interruptible = %d\n", result);
+      }
    }
    else
    {
@@ -1453,8 +1561,11 @@ static int WriteSync(
    {
       DBG( "Invalid device!\n" );
 
+      usb_kill_urb( pWriteURB );
+#if 0 //advoid ReleaseClientID() free again (no PopFromURBList)
       usb_free_urb( pWriteURB );
       kfree(writeSetup);
+#endif
       return -ENXIO;
    }
 
@@ -1469,8 +1580,11 @@ static int WriteSync(
    
       // End critical section
       spin_unlock_irqrestore( &pDev->mQMIDev.mClientMemLock, flags );
+      usb_kill_urb( pWriteURB );
+#if 0 //advoid ReleaseClientID() free again (fail PopFromURBList)
       usb_free_urb( pWriteURB );
       kfree(writeSetup);
+#endif
       return -EINVAL;
    }
 
@@ -1793,8 +1907,10 @@ static void ReleaseClientID(
          pDelURB = PopFromURBList( pDev, clientID );
          while (pDelURB != NULL)
          {
+            spin_unlock_irqrestore( &pDev->mQMIDev.mClientMemLock, flags );
             usb_kill_urb( pDelURB );
             usb_free_urb( pDelURB );
+            spin_lock_irqsave( &pDev->mQMIDev.mClientMemLock, flags );
             pDelURB = PopFromURBList( pDev, clientID );
          }
 
@@ -2605,7 +2721,7 @@ static int UserspaceClose(
    }
    
    DBG( "0x%04X\n", pFilpData->mClientID );
-   
+
    // Disable pFilpData so they can't keep sending read or write 
    //    should this function hang
    // Note: memory pointer is still saved in pFilpData to be deleted later
@@ -3092,16 +3208,17 @@ static int qmi_sync_thread(void *data) {
       DBG( "QMI CTL Sync Procedure Successful\n" );
    }
 
-if (pDev->m_qmap_mode) {
+#if defined(QUECTEL_WWAN_QMAP)
+if (pDev->qmap_mode) {
    // Setup Data Format
-   int rx_urb_size = 0;
-   result = QMIWDASetDataFormat (pDev, pDev->m_qmap_mode, &rx_urb_size);
+   result = QMIWDASetDataFormat (pDev, pDev->qmap_mode, &pDev->qmap_size);
    if (result != 0)
    {
       goto __qmi_sync_finished;
    }
-   pDev->mpNetDev->rx_urb_size = rx_urb_size;
+   pDev->mpNetDev->rx_urb_size = pDev->qmap_size;
 }
+#endif
 
    // Setup WDS callback
    result = SetupQMIWDSCallback( pDev );
@@ -3121,6 +3238,7 @@ if (pDev->m_qmap_mode) {
 __qmi_sync_finished:
    pDev->mbQMIReady = true;
    complete_all(&pDev->mQMIReadyCompletion);
+   pDev->mbQMISyncIng = false;
    if (atomic_dec_and_test(&pDev->refcount)) {
       kfree( pDev );
    }
@@ -3197,8 +3315,10 @@ int RegisterQMIDevice( sGobiUSBNet * pDev )
       atomic_inc(&pDev->refcount);
       init_completion(&pDev->mQMIReadyCompletion);
       pDev->mbQMIReady = false;
+      pDev->mbQMISyncIng = true;
       qmi_sync_task = kthread_run(qmi_sync_thread, (void *)pDev, "qmi_sync/%d", pDev->mpNetDev->udev->devnum);
        if (IS_ERR(qmi_sync_task)) {
+         pDev->mbQMISyncIng = false;
          atomic_dec(&pDev->refcount);
          DBG( "Create qmi_sync_thread fail\n" );
          return PTR_ERR(qmi_sync_task);
@@ -3228,7 +3348,11 @@ int RegisterQMIDevice( sGobiUSBNet * pDev )
    }
 
    // Setup Data Format
-   result = QMIWDASetDataFormat (pDev, pDev->m_qmap_mode, NULL);
+#if defined(QUECTEL_WWAN_QMAP)   
+   result = QMIWDASetDataFormat (pDev, pDev->qmap_mode, NULL);
+#else
+   result = QMIWDASetDataFormat (pDev, 0, NULL);
+#endif
    if (result != 0)
    {
        return result;
@@ -3355,6 +3479,16 @@ void DeregisterQMIDevice( sGobiUSBNet * pDev )
    }
 
    pDev->mbDeregisterQMIDevice = true;
+
+   for (tries = 0; tries < 3000; tries += 10) {
+      if (pDev->mbQMISyncIng == false)
+         break;
+      msleep(10);
+   }
+
+   if (pDev->mbQMISyncIng) {
+      DBG( "QMI sync ing\n" );
+   }
 
    // Release all clients
    spin_lock_irqsave( &pDev->mQMIDev.mClientMemLock, flags );
@@ -3575,10 +3709,16 @@ static bool QMIReady(
       }
 
       // Disregard status.  On errors, just try again
-      WriteSync( pDev,
+      result = WriteSync( pDev,
                  pWriteBuffer,
                  writeBufferSize,
                  QMICTL );
+
+      if (result < 0) //maybe caused by usb disconnect
+      {
+         kfree( pWriteBuffer );
+         return false;
+      }
 
 #if 1
       if (down_timeout( &readSem->readSem, msecs_to_jiffies(interval) ) == 0)
@@ -3625,6 +3765,12 @@ static bool QMIReady(
          
          // End critical section
          spin_unlock_irqrestore( &pDev->mQMIDev.mClientMemLock, flags );
+      }
+
+      if (pDev->mbDeregisterQMIDevice)
+      {
+         kfree( pWriteBuffer );
+         return false;
       }
    }
 
@@ -4136,7 +4282,7 @@ static int QMIWDASetDataFormat( sGobiUSBNet * pDev, int qmap_mode, int *rx_urb_s
 
    result = QMIWDASetDataFormatReq( pWriteBuffer,
                               writeBufferSize, pDev->mbRawIPMode,
-                              qmap_mode, 32*1024, //SDX24&SDX55 support 32KB
+                              qmap_mode ? pDev->qmap_version : 0, (31*1024),
                               1 );
    
    if (result < 0)
@@ -4168,13 +4314,26 @@ static int QMIWDASetDataFormat( sGobiUSBNet * pDev, int qmap_mode, int *rx_urb_s
    readBufferSize = result;
 
 if (qmap_mode && rx_urb_size) {
-   int qmap_enabled = 0, rx_size = 0, tx_size = 0;
+   int qmap_version = 0, rx_size = 0, tx_size = 0;
    result = QMIWDASetDataFormatResp( pReadBuffer,
-                                     readBufferSize, pDev->mbRawIPMode, &qmap_enabled, &rx_size, &tx_size);
-    INFO( "qmap settings qmap_enabled=%d, rx_size=%d, tx_size=%d\n",
-        le32_to_cpu(qmap_enabled), le32_to_cpu(rx_size), le32_to_cpu(tx_size));
+                                     readBufferSize, pDev->mbRawIPMode, &qmap_version, &rx_size, &tx_size, &pDev->qmap_settings);
+    INFO( "qmap settings qmap_version=%d, rx_size=%d, tx_size=%d\n",
+        le32_to_cpu(qmap_version), le32_to_cpu(rx_size), le32_to_cpu(tx_size));
 
-    if (le32_to_cpu(qmap_enabled) == 5) {
+    if (le32_to_cpu(qmap_version)) {
+#if defined(QUECTEL_UL_DATA_AGG)
+        struct ul_agg_ctx *ctx = &pDev->agg_ctx;
+
+        if (le32_to_cpu(pDev->qmap_settings.ul_data_aggregation_max_datagrams) > 1) {
+            ctx->ul_data_aggregation_max_size = le32_to_cpu(pDev->qmap_settings.ul_data_aggregation_max_size);
+            ctx->ul_data_aggregation_max_datagrams = le32_to_cpu(pDev->qmap_settings.ul_data_aggregation_max_datagrams);
+            ctx->dl_minimum_padding = le32_to_cpu(pDev->qmap_settings.dl_minimum_padding);
+        }
+        INFO( "qmap settings ul_data_aggregation_max_size=%d, ul_data_aggregation_max_datagrams=%d\n",
+                ctx->ul_data_aggregation_max_size, ctx->ul_data_aggregation_max_datagrams);
+	if (ctx->ul_data_aggregation_max_datagrams > 11)
+		ctx->ul_data_aggregation_max_datagrams = 11;
+#endif
         *rx_urb_size = le32_to_cpu(rx_size);
     } else {
         *rx_urb_size = 0;
@@ -4183,7 +4342,7 @@ if (qmap_mode && rx_urb_size) {
 } else {
    int qmap_enabled = 0, rx_size = 0, tx_size = 0;
    result = QMIWDASetDataFormatResp( pReadBuffer,
-                                     readBufferSize, pDev->mbRawIPMode, &qmap_enabled, &rx_size, &tx_size);
+                                     readBufferSize, pDev->mbRawIPMode, &qmap_enabled, &rx_size, &tx_size, NULL);
 }
 
    kfree( pReadBuffer );
