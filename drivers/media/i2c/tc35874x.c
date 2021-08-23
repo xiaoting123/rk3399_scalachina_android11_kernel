@@ -213,6 +213,9 @@ struct tc35874x_state {
 	u8 csi_lanes_in_use;
 
 	struct gpio_desc *reset_gpio;
+	struct gpio_desc *stanby_gpio;
+	struct gpio_desc *int_gpio;
+	struct gpio_desc *power_gpio;
 	struct cec_adapter *cec_adap;
 
 	u32 module_index;
@@ -2120,9 +2123,15 @@ static const struct v4l2_ctrl_config tc35874x_ctrl_audio_present = {
 static void tc35874x_gpio_reset(struct tc35874x_state *state)
 {
 	usleep_range(5000, 10000);
-	gpiod_set_value(state->reset_gpio, 1);
-	usleep_range(1000, 2000);
 	gpiod_set_value(state->reset_gpio, 0);
+	gpiod_direction_output(state->power_gpio, 1);
+	usleep_range(5000,10000);
+	gpiod_direction_output(state->stanby_gpio, 1);
+	gpiod_set_value(state->reset_gpio, 1);
+
+	usleep_range(10000, 11000);
+	/* after I2C address has been lock and set it input */
+	gpiod_direction_input(state->int_gpio);
 	msleep(20);
 }
 
@@ -2225,11 +2234,35 @@ static int tc35874x_probe_of(struct tc35874x_state *state)
 	state->pdata.ths_trailcnt = 0x2;
 	state->pdata.hstxvregcnt = 0;
 
+	state->power_gpio = devm_gpiod_get_optional(dev, "power",
+						    GPIOD_OUT_LOW);
+	if (IS_ERR(state->power_gpio)) {
+		dev_err(dev, "failed to get power gpio\n");
+		ret = PTR_ERR(state->power_gpio);
+		goto disable_clk;
+	}
+
 	state->reset_gpio = devm_gpiod_get_optional(dev, "reset",
 						    GPIOD_OUT_LOW);
 	if (IS_ERR(state->reset_gpio)) {
 		dev_err(dev, "failed to get reset gpio\n");
 		ret = PTR_ERR(state->reset_gpio);
+		goto disable_clk;
+	}
+
+	state->int_gpio = devm_gpiod_get_optional(dev, "int",
+						    GPIOD_OUT_LOW);
+	if (IS_ERR(state->int_gpio)) {
+		dev_err(dev, "failed to get int gpio\n");
+		ret = PTR_ERR(state->int_gpio);
+		goto disable_clk;
+	}
+
+	state->stanby_gpio = devm_gpiod_get_optional(dev, "stanby",
+						    GPIOD_OUT_LOW);
+	if (IS_ERR(state->stanby_gpio)) {
+		dev_err(dev, "failed to get stanby gpio\n");
+		ret = PTR_ERR(state->stanby_gpio);
 		goto disable_clk;
 	}
 

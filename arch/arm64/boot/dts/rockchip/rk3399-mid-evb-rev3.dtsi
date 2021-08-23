@@ -58,7 +58,7 @@
 	vdd_center: vdd-center {
 		compatible = "pwm-regulator";
 		rockchip,pwm_id = <2>;
-		rockchip,pwm_voltage = <900000>;
+		rockchip,pwm_voltage = <1000000>;
 		pwms = <&pwm2 0 25000 1>;
 		regulator-name = "vdd_center";
 		regulator-min-microvolt = <800000>;
@@ -150,7 +150,7 @@
 		interrupt-parent = <&gpio1>;
 		interrupts = <21 IRQ_TYPE_LEVEL_LOW>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pmic_int_l &pmic_dvs2>;
+		pinctrl-0 = <&pmic_int_l>;
 		rockchip,system-power-controller;
 		wakeup-source;
 		#clock-cells = <1>;

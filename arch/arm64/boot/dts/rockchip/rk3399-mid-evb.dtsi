@@ -117,6 +117,13 @@
 		regulator-always-on;
 	};
 
+       ext_cam_clk: external-camera-clock {
+                compatible = "fixed-clock";
+                clock-frequency = <27000000>;
+                clock-output-names = "CLK_CAMERA_27MHZ";
+                #clock-cells = <0>;
+       };
+
 	backlight: backlight {
 		status ="okay";
 		compatible = "pwm-backlight";
@@ -227,7 +234,7 @@
 			sound-dai = <&rt5640>;
 		};
 	};
-	
+
 	rk_headset {
 		compatible = "rockchip_headset";
 		headset_gpio = <&gpio2 3 GPIO_ACTIVE_HIGH>;
@@ -471,11 +478,55 @@
 	};
 };
 
-&i2c4 {
-	status = "okay";
-	i2c-scl-rising-time-ns = <600>;
-	i2c-scl-falling-time-ns = <20>;
+&rkisp1_1 {
+   status = "okay";
 
+   port {
+       #address-cells = <1>;
+       #size-cells = <0>;
+
+       isp1_mipi_in: endpoint@0 {
+           reg = <0>;
+           remote-endpoint = <&dphy_tx1rx1_out>;
+       };
+   };
+};
+
+&mipi_dphy_tx1rx1 {
+   status = "okay";
+
+   ports {
+       #address-cells = <1>;
+       #size-cells = <0>;
+
+       port@0 {
+           reg = <0>;
+           #address-cells = <1>;
+           #size-cells = <0>;
+
+           mipi_in_ucam1: endpoint@1 {
+               reg = <1>;
+               /* Unlinked camera */
+               remote-endpoint = <&ucam_out1>;
+               data-lanes = <1 2 3 4>;
+           };
+       };
+
+       port@1 {
+           reg = <1>;
+           #address-cells = <1>;
+           #size-cells = <0>;
+
+           dphy_tx1rx1_out: endpoint@0 {
+               reg = <0>;
+               remote-endpoint = <&isp1_mipi_in>;
+           };
+       };
+   };
+};
+
+&isp1_mmu {
+   status = "okay";
 };
 
 &i2c7 {
@@ -493,7 +544,46 @@
 //		tp-supply = <&vcc3v0_tp>;
 	};
 };
+&i2c4 {
+	status = "okay";
+	i2c-scl-rising-time-ns = <600>;
+	i2c-scl-falling-time-ns = <20>;
 
+        tc358749x: tc358749x@0f {
+               compatible = "toshiba,tc358749";
+               reg = <0x0f>;
+              clocks = <&ext_cam_clk>;
+               clock-names = "refclk";
+               stanby-gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>;
+               reset-gpios = <&gpio2 28 GPIO_ACTIVE_HIGH>;
+               int-gpios = <&gpio1 22 GPIO_ACTIVE_HIGH>;
+               pinctrl-names = "default";
+               pinctrl-0 = <&hdmiin_gpios>;
+               rockchip,camera-module-index = <0>;
+               rockchip,camera-module-facing = "front";
+               rockchip,camera-module-name = "TC358749X";
+              rockchip,camera-module-lens-name = "TC358749X";
+
+               status = "okay";
+              port {
+                       ucam_out1: endpoint {
+                    /* Unlinked mipi dphy rx0 */
+                    remote-endpoint = <&mipi_in_ucam1>;
+                    data-lanes = <1 2 3 4>;
+                    clock-noncontinuous;
+                    link-frequencies =
+                   /bits/ 64 <297000000>;
+                };
+              };
+         };
+
+         tc358749x_audio: tc358749x-audio@0f {
+                 compatible = "toshiba,tc358749x";
+                 reg = <0x0f>;
+                 #sound-dai-cells = <0>;
+                 status = "okay";
+         };
+};
 &io_domains {
 	status = "okay";
 
@@ -646,6 +736,15 @@
 		};
 	};
 
+	hdmiin {
+		hdmiin_gpios: hdmiin_gpios {
+			rockchip,pins =
+				<1 18 RK_FUNC_GPIO &pcfg_pull_none>,
+				<2 28 RK_FUNC_GPIO &pcfg_pull_none>,
+				<1 22 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
 	wireless-bluetooth {
 		uart0_gpios: uart0-gpios {
 			rockchip,pins =
@@ -671,10 +770,6 @@
 				<1 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 
-		pmic_dvs2: pmic-dvs2 {
-			rockchip,pins =
-				<1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_down>;
-		};
 		vsel1_gpio: vsel1-gpio {
 			rockchip,pins =
 				<1 RK_PC1 RK_FUNC_GPIO &pcfg_pull_down>;
