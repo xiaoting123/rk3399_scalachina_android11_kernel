@@ -233,6 +233,13 @@ static int tc35874x_s_ctrl_detect_tx_5v(struct v4l2_subdev *sd);
 static int tc35874x_s_dv_timings(struct v4l2_subdev *sd,
 				 struct v4l2_dv_timings *timings);
 
+
+static bool bi2cread_s = false;
+static unsigned int ui2cread_fcount= 0;
+static unsigned int ufmax = 5;
+int tc35874x_gpio_reset(struct tc35874x_state *state);
+void tc35874x_reset_and_init(struct v4l2_subdev *sd);
+
 static inline struct tc35874x_state *to_state(struct v4l2_subdev *sd)
 {
 	return container_of(sd, struct tc35874x_state, sd);
@@ -265,7 +272,10 @@ static void i2c_rd(struct v4l2_subdev *sd, u16 reg, u8 *values, u32 n)
 	if (err != ARRAY_SIZE(msgs)) {
 		v4l2_err(sd, "%s: reading register 0x%x from 0x%x failed\n",
 				__func__, reg, client->addr);
-	}
+                ui2cread_fcount++;
+	}else{
+                bi2cread_s = true;
+        }
 }
 
 static void i2c_wr(struct v4l2_subdev *sd, u16 reg, u8 *values, u32 n)
@@ -1479,6 +1489,11 @@ static int tc35874x_isr(struct v4l2_subdev *sd, u32 status, bool *handled)
 
 	v4l2_dbg(1, debug, sd, "%s: IntStatus = 0x%04x\n", __func__, intstatus);
 
+        if ( bi2cread_s == true && ui2cread_fcount >= ufmax){
+              tc35874x_reset_and_init(sd);
+              ui2cread_fcount = 0;
+        }
+
 	if (intstatus & MASK_HDMI_INT) {
 		u8 hdmi_int0 = i2c_rd8(sd, HDMI_INT0);
 		u8 hdmi_int1 = i2c_rd8(sd, HDMI_INT1);
@@ -2120,19 +2135,49 @@ static const struct v4l2_ctrl_config tc35874x_ctrl_audio_present = {
 /* --------------- PROBE / REMOVE --------------- */
 
 #ifdef CONFIG_OF
-static void tc35874x_gpio_reset(struct tc35874x_state *state)
+int tc35874x_gpio_reset(struct tc35874x_state *state)
 {
-	usleep_range(5000, 10000);
-	gpiod_set_value(state->reset_gpio, 0);
-	gpiod_direction_output(state->power_gpio, 1);
-	usleep_range(5000,10000);
-	gpiod_direction_output(state->stanby_gpio, 1);
-	gpiod_set_value(state->reset_gpio, 1);
+    if( !IS_ERR_OR_NULL(state->int_gpio) ){
+        gpiod_direction_output(state->int_gpio, 0 );
+    }
+    if( !IS_ERR_OR_NULL(state->reset_gpio) )
+    {
+        usleep_range(5000, 10000);
+        gpiod_set_value(state->reset_gpio, 0);
+    }
+    if( !IS_ERR_OR_NULL(state->stanby_gpio) ){
+        gpiod_set_value(state->stanby_gpio, 0);
+        usleep_range(5000, 10000);
+    }
 
-	usleep_range(10000, 11000);
-	/* after I2C address has been lock and set it input */
-	gpiod_direction_input(state->int_gpio);
-	msleep(20);
+    if( !IS_ERR_OR_NULL(state->power_gpio) )
+        gpiod_direction_output(state->power_gpio, 1);
+
+    if( !IS_ERR_OR_NULL(state->stanby_gpio) )
+    {
+        usleep_range(5000,10000);
+        gpiod_direction_output(state->stanby_gpio, 1);
+    }
+    if( !IS_ERR_OR_NULL(state->reset_gpio) )
+    {
+        gpiod_set_value(state->reset_gpio, 1);
+        usleep_range(10000, 11000);
+    }
+
+    /* after I2C address has been lock and set it input */
+   if( !IS_ERR_OR_NULL(state->int_gpio) )
+        gpiod_direction_input(state->int_gpio);
+
+    if( (!IS_ERR_OR_NULL(state->power_gpio) &&  !gpiod_get_value(state->power_gpio)) ||
+	    (!IS_ERR_OR_NULL(state->stanby_gpio) && !gpiod_get_value(state->stanby_gpio)) ||
+	    (!IS_ERR_OR_NULL(state->reset_gpio) &&  !gpiod_get_value(state->reset_gpio)) )
+    {
+	    printk("gpio power,standy or reset get zero\n");
+	    return -EPROBE_DEFER;
+    }
+
+    msleep(2);
+    return 0;
 }
 
 static int tc35874x_probe_of(struct tc35874x_state *state)
@@ -2266,8 +2311,15 @@ static int tc35874x_probe_of(struct tc35874x_state *state)
 		goto disable_clk;
 	}
 
-	if (state->reset_gpio)
-		tc35874x_gpio_reset(state);
+    if (!IS_ERR_OR_NULL(state->reset_gpio ))
+    {
+        if(tc35874x_gpio_reset(state))
+        {
+            dev_err(dev, "tc35874x_gpio_reset error, re-init later\n");
+            ret = -EPROBE_DEFER;
+            goto disable_clk;
+        }
+    }
 
 	ret = 0;
 	goto free_endpoint;
@@ -2284,6 +2336,35 @@ static inline int tc35874x_probe_of(struct tc35874x_state *state)
 	return -ENODEV;
 }
 #endif
+
+void tc35874x_reset_and_init(struct v4l2_subdev *sd)
+{
+     struct tc35874x_state *state = to_state(sd);
+     struct v4l2_subdev_edid def_edid;
+     struct v4l2_dv_timings def_timing = V4L2_DV_BT_CEA_640X480P59_94;
+     printk("tc35874x_isr can't read the tc3587 i2c address, but havs been success, reset\n");
+     if(!tc35874x_gpio_reset(state)){
+           tc35874x_initial_setup(sd);
+
+           tc35874x_s_dv_timings(sd, &def_timing);
+
+           tc35874x_set_csi_color_space(sd);
+
+           def_edid.pad = 0;
+           def_edid.start_block = 0;
+           def_edid.blocks = 1;
+           def_edid.edid = EDID_1920x1080_60;
+
+           tc35874x_s_edid(sd, &def_edid);
+
+           tc35874x_init_interrupts(sd);
+
+           tc35874x_enable_interrupts(sd, tx_5v_power_present(sd));
+           i2c_wr16(sd, INTMASK, ~(MASK_HDMI_MSK | MASK_CSI_MSK) & 0xffff);
+
+     }else
+          printk("tc35874x_isr unknow error\n");
+}
 
 static int tc35874x_probe(struct i2c_client *client,
 			  const struct i2c_device_id *id)
@@ -2336,6 +2417,8 @@ static int tc35874x_probe(struct i2c_client *client,
 		state->bus.flags = V4L2_MBUS_CSI2_CONTINUOUS_CLOCK;
 	} else {
 		err = tc35874x_probe_of(state);
+		if (err == -EPROBE_DEFER)
+			return err;
 		if (err == -ENODEV)
 			v4l_err(client, "No platform data!\n");
 		if (err)
@@ -2357,6 +2440,10 @@ static int tc35874x_probe(struct i2c_client *client,
 			  client->addr << 1);
 		return -ENODEV;
 	}
+        if ( bi2cread_s == false ){
+            printk("tc3587 I2C address is invalid when probe, be as null\n");
+            return -ENODEV;
+        }
 
 	/* control handlers */
 	v4l2_ctrl_handler_init(&state->hdl, 4);
