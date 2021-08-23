@@ -362,6 +362,7 @@
 	clock-freq-min-max = <400000 150000000>;
 	supports-sd;
 	bus-width = <4>;
+	card-detect-delay = <1200>;
 	cap-mmc-highspeed;
 	cap-sd-highspeed;
 	disable-wp;
