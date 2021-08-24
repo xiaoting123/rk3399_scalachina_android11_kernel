@@ -340,6 +340,11 @@
 		int-n-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
 		status = "disabled";
 	};
+
+	scalalight: scalalight@49 {
+		compatible = "scalalight,scalalight-apds9300";
+		reg = <0x49>;
+	};
 };
 
 &pwm2 {

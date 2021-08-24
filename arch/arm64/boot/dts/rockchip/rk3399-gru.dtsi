@@ -554,7 +554,7 @@ ap_i2c_audio: &i2c8 {
 };
 
 &spi2 {
-	status = "okay";
+	status = "disabled";
 };
 
 &spi5 {
